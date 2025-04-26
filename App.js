@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-// Компоненты
 import BottomNav from './components/BottomNav';
+import ScanQRScreen from './screens/ScanQRScreen'; // подключаем экран
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +17,11 @@ export default function App() {
             name="MainTabs"
             component={BottomNav}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ScanQR"
+            component={ScanQRScreen}
+            options={{ title: 'Сканировать QR-код' }}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { tabs } from '../navigation/tabs';
+import { BottomNavStyles } from '../styles/BottomNavStyles';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,22 +21,10 @@ export default function BottomNav() {
                     ),
                     tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'gray',
-                    tabBarStyle: {
-                        backgroundColor: '#2c2c34',
-                        height: 70,
-                        paddingBottom: 4,
-                        paddingTop: 4,
-                    },
-                    tabBarItemStyle: {
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    },
-                    tabBarLabelStyle: {
-                        fontSize: 12,
-                        marginBottom: 0,
-                    },
-                    headerStyle: { backgroundColor: '#ffffff' },
-                    headerTitleAlign: 'center',
+                    tabBarStyle: BottomNavStyles.tabBarStyle,
+                    tabBarItemStyle: BottomNavStyles.tabBarItemStyle,
+                    tabBarLabelStyle: BottomNavStyles.tabBarLabelStyle,
+                    headerStyle: BottomNavStyles.headerStyle,
                 };
             }}
         >
