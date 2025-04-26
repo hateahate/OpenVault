@@ -1,13 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, StyleSheet, Alert, Animated, Pressable } from 'react-native';
-import { FAB, Card, Title, Paragraph, Dialog, Portal, Button, TextInput } from 'react-native-paper';
+import { FAB, Card, Title, Dialog, Portal, Button, TextInput } from 'react-native-paper';
 import { loadAccounts, saveAccounts } from '../storage/secureStorage';
-import { authenticator } from 'otplib';
+import CryptoJS from 'crypto-js';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { generateTOTP } from '../utils/crypto/totpGenerator';
 
-export default function Authenticator() {
+const STEP = 30; // 30 секунд
+
+
+
+export default function AuthenticatorScreen() {
     const [accounts, setAccounts] = useState([]);
-    const [timeLeft, setTimeLeft] = useState(30);
+    const [timeLeft, setTimeLeft] = useState(STEP);
     const [editVisible, setEditVisible] = useState(false);
     const [selectedAccountIndex, setSelectedAccountIndex] = useState(null);
     const [newLabel, setNewLabel] = useState('');
@@ -29,7 +34,17 @@ export default function Authenticator() {
 
     const fetchAccounts = async () => {
         const data = await loadAccounts();
-        setAccounts(data);
+        if (data.length === 0) {
+            const testAccounts = [
+                { label: 'GitHub', secret: 'JBSWY3DPEHPK3PXP' },
+                { label: 'Google', secret: 'KRSXG5DSMFZWIIDM' },
+                { label: 'Twitter', secret: 'MFZWIZLON5UW4ZLZ' },
+            ];
+            await saveAccounts(testAccounts);
+            setAccounts(testAccounts);
+        } else {
+            setAccounts(data);
+        }
     };
 
     const startTimer = () => {
@@ -39,7 +54,7 @@ export default function Authenticator() {
                 if (prev <= 1) {
                     fetchAccounts();
                     progress.setValue(1);
-                    return 30;
+                    return STEP;
                 }
                 return prev - 1;
             });
@@ -47,7 +62,7 @@ export default function Authenticator() {
 
         Animated.timing(progress, {
             toValue: 0,
-            duration: 30000,
+            duration: STEP * 1000,
             useNativeDriver: false,
         }).start();
     };
@@ -92,7 +107,7 @@ export default function Authenticator() {
     };
 
     const renderItem = ({ item, index }) => {
-        const code = authenticator.generate(item.secret);
+        const code = generateTOTP(item.secret);
         const codeFormatted = code.match(/.{1,3}/g)?.join(' ') || code;
 
         return (
@@ -132,7 +147,7 @@ export default function Authenticator() {
                 style={styles.fab}
                 small
                 icon="plus"
-                onPress={() => navigation.navigate('ScanQR')}
+                onPress={() => console.log('Тут будет добавление вручную')}
             />
 
             <Portal>
@@ -192,7 +207,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         bottom: 16,
-        backgroundColor: '#03DAC5', // Новый красивый бирюзовый цвет Material You
+        backgroundColor: '#03DAC5',
     },
     progressBar: {
         height: 4,

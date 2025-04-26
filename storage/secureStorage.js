@@ -22,3 +22,25 @@ export async function loadAccounts() {
         return [];
     }
 }
+
+const NOTES_KEY = 'notes_storage';
+
+export async function saveNotes(notes) {
+    try {
+        const jsonValue = JSON.stringify(notes);
+        await SecureStore.setItemAsync(NOTES_KEY, jsonValue);
+    } catch (error) {
+        console.error('Ошибка сохранения заметок', error);
+    }
+}
+
+export async function loadNotes() {
+    try {
+        const jsonValue = await SecureStore.getItemAsync(NOTES_KEY);
+        return jsonValue != null ? JSON.parse(jsonValue) : [];
+    } catch (error) {
+        console.error('Ошибка загрузки заметок', error);
+        return [];
+    }
+}
+
