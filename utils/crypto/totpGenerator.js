@@ -2,11 +2,9 @@ import CryptoJS from 'crypto-js';
 import { base32Decode } from './base32';
 import { wordArrayToBytes } from './wordArrayHelpers';
 
-const STEP = 30; // 30 секунд
-
-export function generateTOTP(secret) {
+export function generateTOTP(secret, step = 30, digits = 6) {
     const currentTime = Math.floor(Date.now() / 1000);
-    const counter = Math.floor(currentTime / STEP);
+    const counter = Math.floor(currentTime / step);
 
     const counterBytes = new Uint8Array(8);
     let movingCounter = counter;
@@ -29,6 +27,6 @@ export function generateTOTP(secret) {
         ((hmacBytes[offset + 2] & 0xff) << 8) |
         (hmacBytes[offset + 3] & 0xff);
 
-    const otp = binary % 1000000;
-    return otp.toString().padStart(6, '0');
+    const otp = binary % Math.pow(10, digits);
+    return otp.toString().padStart(digits, '0');
 }
