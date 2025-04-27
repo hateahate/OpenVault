@@ -1,117 +1,207 @@
+// screens/SettingsScreen.js
 import React, { useState, useContext } from 'react';
-import { View, ScrollView } from 'react-native';
+import { ScrollView, Alert } from 'react-native';
 import { Text, List, Switch, TextInput, Button, Divider, RadioButton } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
-import i18n from '../i18n'; // ✅ Добавляем импорт
+import { useTranslation } from 'react-i18next';
+import { SettingsScreenStyles as styles } from '../styles/SettingsScreenStyles';
 
 export default function SettingsScreen() {
-    const { settings, updatePinCode, toggleBiometric, updateTabLocks, updateLanguage } = useContext(AppContext);
-    const [pin, setPin] = useState(settings.pinCode || '');
-    const [newPin, setNewPin] = useState('');
-    const [biometricEnabled, setBiometricEnabled] = useState(settings.biometricEnabled);
-    const [tabLocks, setTabLocks] = useState(settings.tabLocks || {});
-    const [language, setLanguage] = useState(settings.language);
+    const {
+        settings,
+        updatePinCode,
+        removePinCode,
+        verifyPin,
+        toggleBiometric,
+        updateTabLocks,
+        updateLanguage,
+        toggleRequestAuthOnLaunch,
+        updateTabTimeout,
+    } = useContext(AppContext);
 
-    const handleSavePin = async () => {
-        if (newPin.length >= 4) {
-            await updatePinCode(newPin);
-            setPin(newPin);
-            setNewPin('');
+    const { t } = useTranslation();
+
+    const [oldPinInput, setOldPinInput] = useState('');
+    const [newPinInput, setNewPinInput] = useState('');
+    const [step, setStep] = useState(settings.hasPin ? 'confirmOldPin' : 'setNewPin');
+
+    const handlePinProcess = async () => {
+        if (step === 'confirmOldPin') {
+            const isValid = await verifyPin(oldPinInput);
+            if (isValid) {
+                setStep('setNewPin');
+                setOldPinInput('');
+            } else {
+                Alert.alert(t('wrong_pin'), t('try_again'));
+                setOldPinInput('');
+            }
+        } else if (step === 'setNewPin') {
+            if (newPinInput.length >= 4) {
+                await updatePinCode(newPinInput);
+                setNewPinInput('');
+                setStep('confirmOldPin');
+                Alert.alert(t('success'), t('pin_updated'));
+            } else {
+                Alert.alert(t('invalid_pin'), t('pin_must_be_4_digits'));
+            }
         }
     };
 
+    const handleRemovePin = () => {
+        Alert.alert(
+            t('attention'),
+            t('remove_pin_warning'),
+            [
+                { text: t('cancel'), style: 'cancel' },
+                {
+                    text: t('remove'),
+                    style: 'destructive',
+                    onPress: async () => {
+                        await removePinCode();
+                        setStep('setNewPin');
+                        setOldPinInput('');
+                        setNewPinInput('');
+                    },
+                },
+            ]
+        );
+    };
+
     const handleToggleBiometric = async (value) => {
-        setBiometricEnabled(value);
         await toggleBiometric(value);
     };
 
     const handleToggleTabLock = async (tabName) => {
-        const updatedLocks = { ...tabLocks, [tabName]: !tabLocks[tabName] };
-        setTabLocks(updatedLocks);
+        const updatedLocks = { ...settings.tabLocks, [tabName]: !settings.tabLocks[tabName] };
         await updateTabLocks(updatedLocks);
     };
 
     const handleChangeLanguage = async (value) => {
-        setLanguage(value);
         await updateLanguage(value);
     };
 
+    const handleChangeTimeout = async (value) => {
+        await updateTabTimeout(Number(value));
+    };
+
+    const handleToggleRequestAuthOnLaunch = async (value) => {
+        await toggleRequestAuthOnLaunch(value);
+    };
+
     return (
-        <ScrollView style={{ flex: 1, padding: 16 }}>
-            <List.Section title={i18n.t('current_pin')}>
-                <Text>{i18n.t('current_pin')}: {pin ? i18n.t('save') : i18n.t('cancel')}</Text>
+        <ScrollView style={styles.container}>
+            <Text style={styles.sectionTitle}>
+                {settings.hasPin ? t('change_pin') : t('set_pin')}
+            </Text>
+
+            {settings.hasPin && step === 'confirmOldPin' && (
                 <TextInput
-                    label={i18n.t('new_pin')}
-                    value={newPin}
-                    onChangeText={setNewPin}
+                    label={t('enter_old_pin')}
+                    value={oldPinInput}
+                    onChangeText={setOldPinInput}
                     secureTextEntry
                     keyboardType="numeric"
-                    style={{ marginVertical: 8 }}
+                    style={styles.input}
                 />
-                <Button mode="contained" onPress={handleSavePin} disabled={newPin.length < 4}>
-                    {i18n.t('save_pin')}
+            )}
+
+            {step === 'setNewPin' && (
+                <TextInput
+                    label={t('enter_new_pin')}
+                    value={newPinInput}
+                    onChangeText={setNewPinInput}
+                    secureTextEntry
+                    keyboardType="numeric"
+                    style={styles.input}
+                />
+            )}
+
+            <Button
+                mode="contained"
+                onPress={handlePinProcess}
+                disabled={(step === 'confirmOldPin' && oldPinInput.length < 4) || (step === 'setNewPin' && newPinInput.length < 4)}
+                style={styles.button}
+            >
+                {step === 'confirmOldPin' ? t('confirm') : t('save')}
+            </Button>
+
+            {settings.hasPin && (
+                <Button
+                    mode="outlined"
+                    onPress={handleRemovePin}
+                    style={[styles.button, { marginTop: 8 }]}
+                >
+                    {t('remove_pin')}
                 </Button>
-            </List.Section>
+            )}
 
-            <Divider style={{ marginVertical: 16 }} />
+            {settings.hasPin && (
+                <>
+                    <Divider style={styles.divider} />
 
-            <List.Section title={i18n.t('biometric_usage')}>
-                <List.Item
-                    title={i18n.t('biometric_usage')}
-                    right={() => (
-                        <Switch
-                            value={biometricEnabled}
-                            onValueChange={handleToggleBiometric}
-                            disabled={!pin}
-                        />
-                    )}
-                    description={!pin ? i18n.t('current_pin') : ''}
-                />
-            </List.Section>
-
-            <Divider style={{ marginVertical: 16 }} />
-
-            <List.Section title={i18n.t('auth_on_start')}>
-                <List.Item
-                    title={i18n.t('auth_on_start')}
-                    right={() => (
-                        <Switch
-                            value={settings.requestAuthOnLaunch}
-                            onValueChange={(value) => toggleRequestAuthOnLaunch(value)}
-                        />
-                    )}
-                />
-            </List.Section>
-
-
-            <Divider style={{ marginVertical: 16 }} />
-
-            <List.Section title={i18n.t('tab_locking')}>
-                {tabs.map((tab) => (
+                    <Text style={styles.sectionTitle}>{t('biometric_usage')}</Text>
                     <List.Item
-                        key={tab.key}
-                        title={i18n.t(tab.title)}
+                        title={t('biometric_usage')}
+                        titleStyle={styles.listItemTitle}
                         right={() => (
                             <Switch
-                                value={tabLocks?.[tab.key] || false}
-                                onValueChange={() => handleToggleTabLock(tab.key)}
-                                disabled={!pin}
+                                value={settings.biometricEnabled}
+                                onValueChange={handleToggleBiometric}
                             />
                         )}
                     />
-                ))}
-            </List.Section>
 
-            <Divider style={{ marginVertical: 16 }} />
+                    <Divider style={styles.divider} />
 
-            <List.Section title={i18n.t('language_setting')}>
-                <RadioButton.Group onValueChange={handleChangeLanguage} value={language}>
-                    <RadioButton.Item label={i18n.t('russian')} value="ru" />
-                    <RadioButton.Item label={i18n.t('english')} value="en" />
-                </RadioButton.Group>
-            </List.Section>
+                    <Text style={styles.sectionTitle}>{t('tab_locking')}</Text>
+                    {tabs.map((tab) => (
+                        <List.Item
+                            key={tab.key}
+                            title={t(tab.title)}
+                            titleStyle={styles.listItemTitle}
+                            right={() => (
+                                <Switch
+                                    value={settings.tabLocks?.[tab.key] || false}
+                                    onValueChange={() => handleToggleTabLock(tab.key)}
+                                />
+                            )}
+                        />
+                    ))}
+                </>
+            )}
 
+            <Divider style={styles.divider} />
+
+            <Text style={styles.sectionTitle}>{t('tab_timeout')}</Text>
+            <RadioButton.Group onValueChange={handleChangeTimeout} value={String(settings.tabTimeout)}>
+                <RadioButton.Item label={t('30_sec')} value="30" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('1_min')} value="60" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('5_min')} value="300" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('never')} value="0" labelStyle={styles.radioTitle} />
+            </RadioButton.Group>
+
+            <Divider style={styles.divider} />
+
+            <Text style={styles.sectionTitle}>{t('language_setting')}</Text>
+            <RadioButton.Group onValueChange={handleChangeLanguage} value={settings.language}>
+                <RadioButton.Item label={t('russian')} value="ru" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('english')} value="en" labelStyle={styles.radioTitle} />
+            </RadioButton.Group>
+
+            <Divider style={styles.divider} />
+
+            <Text style={styles.sectionTitle}>{t('auth_on_start')}</Text>
+            <List.Item
+                title={t('auth_on_start')}
+                titleStyle={styles.listItemTitle}
+                right={() => (
+                    <Switch
+                        value={settings.requestAuthOnLaunch}
+                        onValueChange={handleToggleRequestAuthOnLaunch}
+                    />
+                )}
+            />
         </ScrollView>
     );
 }

@@ -1,3 +1,4 @@
+// screens/ScanQRScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -5,12 +6,13 @@ import { loadAccounts, saveAccounts } from '../storage/secureStorage';
 import { useNavigation } from '@react-navigation/native';
 import { ScanQRScreenStyles as styles } from '../styles/ScanQRScreenStyles';
 import { parseOtpAuthUri } from '../utils/crypto/parseOtpAuthUri';
-import i18n from '../i18n'; // ✅ Добавляем импорт
+import { useTranslation } from 'react-i18next'; // ✅
 
 export default function ScanQRScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!permission) {
@@ -26,17 +28,17 @@ export default function ScanQRScreen() {
                 const account = parseOtpAuthUri(data);
                 const accounts = await loadAccounts();
                 await saveAccounts([...accounts, account]);
-                Alert.alert(i18n.t('success'), `${i18n.t('success_add_account')} ${account.label}`, [
+                Alert.alert(t('success'), `${t('success_add_account')} ${account.label}`, [
                     { text: 'Ок', onPress: () => navigation.goBack() }
                 ]);
             } else {
-                Alert.alert(i18n.t('error'), i18n.t('invalid_qr'), [
+                Alert.alert(t('error'), t('invalid_qr'), [
                     { text: 'Ок', onPress: () => setScanned(false) }
                 ]);
             }
         } catch (error) {
             console.error(error);
-            Alert.alert(i18n.t('error'), i18n.t('qr_processing_error'), [
+            Alert.alert(t('error'), t('qr_processing_error'), [
                 { text: 'Ок', onPress: () => setScanned(false) }
             ]);
         }
@@ -46,7 +48,7 @@ export default function ScanQRScreen() {
         return (
             <View style={styles.centered}>
                 <ActivityIndicator size="large" color="#6200ee" />
-                <Text>{i18n.t('requesting_camera')}</Text>
+                <Text>{t('requesting_camera')}</Text>
             </View>
         );
     }

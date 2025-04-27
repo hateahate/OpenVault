@@ -6,13 +6,14 @@ import { ActivityIndicator } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { BottomNavStyles } from '../styles/BottomNavStyles';
-import * as LocalAuthentication from 'expo-local-authentication';
-import i18n from '../i18n'; // Добавили!
+import ProtectedScreenWrapper from './ProtectedScreenWrapper'; // ✅
+import { useTranslation } from 'react-i18next'; // ✅
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomNav() {
     const { settings } = useContext(AppContext);
+    const { t } = useTranslation();
 
     return (
         <Tab.Navigator
@@ -32,7 +33,7 @@ export default function BottomNav() {
                     tabBarItemStyle: BottomNavStyles.tabBarItemStyle,
                     tabBarLabelStyle: BottomNavStyles.tabBarLabelStyle,
                     headerStyle: BottomNavStyles.headerStyle,
-                    tabBarLabel: i18n.t(currentTab?.title),
+                    tabBarLabel: t(currentTab?.title),
                 };
             }}
         >
@@ -51,35 +52,4 @@ export default function BottomNav() {
             ))}
         </Tab.Navigator>
     );
-}
-
-function ProtectedScreenWrapper({ tabName, component: Component, tabLocks }) {
-    const [accessGranted, setAccessGranted] = React.useState(false);
-    const [checkingAccess, setCheckingAccess] = React.useState(true);
-
-    React.useEffect(() => {
-        const checkAccess = async () => {
-            if (tabLocks && tabLocks[tabName]) {
-                const result = await LocalAuthentication.authenticateAsync({
-                    promptMessage: 'Введите PIN или биометрию',
-                });
-                setAccessGranted(result.success);
-            } else {
-                setAccessGranted(true);
-            }
-            setCheckingAccess(false);
-        };
-
-        checkAccess();
-    }, []);
-
-    if (checkingAccess) {
-        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: 'center' }} />;
-    }
-
-    if (!accessGranted) {
-        return null; // Можно сюда поставить экран \"Нет доступа\" если захочешь
-    }
-
-    return <Component />;
 }

@@ -1,3 +1,4 @@
+// App.js
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -10,6 +11,7 @@ import { AppProvider } from './contexts/AppContext';
 import AppContext from './contexts/AppContext';
 import './i18n';
 import * as SplashScreen from 'expo-splash-screen';
+import { useTranslation } from 'react-i18next';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,6 +31,7 @@ export default function App() {
 
 function MainNavigator() {
   const { isAuthenticated, isLoading, authenticate } = React.useContext(AppContext);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     authenticate();
@@ -41,11 +44,11 @@ function MainNavigator() {
   }, [isLoading]);
 
   if (isLoading) {
-    return null; // SplashScreen работает, не нужно показывать ничего
+    return null;
   }
 
   if (!isAuthenticated) {
-    return null; // Здесь можно потом поставить экран запроса PIN
+    return null;
   }
 
   return (
@@ -58,12 +61,12 @@ function MainNavigator() {
       <Stack.Screen
         name="ScanQR"
         component={ScanQRScreen}
-        options={{ title: i18n.t('scan_qr') }}
+        options={{ title: t('scan_qr') }}
       />
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ title: i18n.t('settings') }}
+        options={{ title: t('settings') }}
       />
     </Stack.Navigator>
   );

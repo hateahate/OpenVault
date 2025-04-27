@@ -1,14 +1,16 @@
+// screens/NotesScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text } from 'react-native';
 import { FAB, Card, Title, Paragraph } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { loadNotes } from '../storage/secureStorage';
 import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
-import i18n from '../i18n'; // ✅ Добавляем импорт
+import { useTranslation } from 'react-i18next'; // ✅
 
 export default function NotesScreen() {
     const [notes, setNotes] = useState([]);
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchNotes();
@@ -31,7 +33,7 @@ export default function NotesScreen() {
     return (
         <View style={styles.container}>
             {notes.length === 0 ? (
-                <Text style={styles.emptyText}>{i18n.t('no_notes')}</Text>
+                <Text style={styles.emptyText}>{t('no_notes')}</Text>
             ) : (
                 <FlatList
                     data={notes}

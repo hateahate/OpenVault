@@ -1,3 +1,4 @@
+// screens/AuthenticatorScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, Alert } from 'react-native';
 import { FAB, Portal, Dialog, Button, TextInput } from 'react-native-paper';
@@ -5,7 +6,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { AuthenticatorScreenStyles as styles } from '../styles/AuthenticatorScreenStyles';
 import { fetchAccounts, deleteAccount, saveEditedLabel } from '../utils/accounts';
 import AuthenticatorCard from '../components/AuthenticatorCard';
-import i18n from '../i18n'; // ✅ Добавляем импорт
+import { useTranslation } from 'react-i18next'; // ✅
 
 export default function AuthenticatorScreen() {
     const [accounts, setAccounts] = useState([]);
@@ -16,6 +17,7 @@ export default function AuthenticatorScreen() {
 
     const navigation = useNavigation();
     const isFocused = useIsFocused();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -58,11 +60,11 @@ export default function AuthenticatorScreen() {
             index={index}
             onLongPress={(idx) =>
                 Alert.alert(
-                    i18n.t('delete_account'),
-                    i18n.t('are_you_sure'),
+                    t('delete_account'),
+                    t('are_you_sure'),
                     [
-                        { text: i18n.t('cancel'), style: 'cancel' },
-                        { text: i18n.t('delete_account'), style: 'destructive', onPress: () => handleDeleteAccount(idx) }
+                        { text: t('cancel'), style: 'cancel' },
+                        { text: t('delete_account'), style: 'destructive', onPress: () => handleDeleteAccount(idx) }
                     ]
                 )
             }
@@ -74,7 +76,7 @@ export default function AuthenticatorScreen() {
     return (
         <View style={styles.container}>
             {accounts.length === 0 ? (
-                <Text style={styles.emptyText}>{i18n.t('no_accounts')}</Text>
+                <Text style={styles.emptyText}>{t('no_accounts')}</Text>
             ) : (
                 <FlatList
                     data={accounts}
@@ -92,17 +94,17 @@ export default function AuthenticatorScreen() {
 
             <Portal>
                 <Dialog visible={editVisible} onDismiss={() => setEditVisible(false)}>
-                    <Dialog.Title>{i18n.t('edit')}</Dialog.Title>
+                    <Dialog.Title>{t('edit')}</Dialog.Title>
                     <Dialog.Content>
                         <TextInput
-                            label={i18n.t('new_pin')}
+                            label={t('new_pin')}
                             value={newLabel}
                             onChangeText={setNewLabel}
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setEditVisible(false)}>{i18n.t('cancel')}</Button>
-                        <Button onPress={handleSaveEditedLabel}>{i18n.t('save')}</Button>
+                        <Button onPress={() => setEditVisible(false)}>{t('cancel')}</Button>
+                        <Button onPress={handleSaveEditedLabel}>{t('save')}</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
