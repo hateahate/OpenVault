@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "OpenVault",
-    "slug": "openvault",
+    "name": "LockHive",
+    "slug": "lockhive",
     "version": "0.0.4.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
