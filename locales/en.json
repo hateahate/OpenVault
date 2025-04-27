@@ -45,5 +45,7 @@
     "enter_old_pin": "Enter current PIN",
     "remove_pin": "Disable PIN (Unsafe)",
     "confirm": "Confirm",
-    "remove": "Remove"
+    "remove": "Remove",
+    "set_pin": "Set PIN",
+    "enter_new_pin": "Enter new PIN"
 }
