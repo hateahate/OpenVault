@@ -31,4 +31,15 @@ export const SettingsScreenStyles = StyleSheet.create({
         fontSize: 16,
         color: '#424242',
     },
+    footerContainer: {
+        marginTop: 30,
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    footerText: {
+        fontSize: 12,
+        color: 'gray',
+        textAlign: 'center',
+        lineHeight: 18,
+    },
 });

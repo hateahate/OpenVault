@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Text, List, Switch, Button, Divider, RadioButton } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { useTranslation } from 'react-i18next';
 import { SettingsScreenStyles as styles } from '../styles/SettingsScreenStyles';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
 export default function SettingsScreen() {
     const {
@@ -19,6 +20,7 @@ export default function SettingsScreen() {
 
     const { t } = useTranslation();
     const navigation = useNavigation();
+    const appVersion = Constants.expoConfig.version;
 
     const handleToggleBiometric = async (value) => {
         await toggleBiometric(value);
@@ -138,6 +140,14 @@ export default function SettingsScreen() {
                 )}
             />
             <Text style={{ marginBottom: 40 }} />
+
+            <View style={styles.footerContainer}>
+                <Text style={styles.footerText}>
+                    OpenVault v{appVersion}{"\n"}
+                    Contact: stepan@pavlenko.lol{"\n"}
+                </Text>
+            </View>
+
         </ScrollView>
     );
 }
