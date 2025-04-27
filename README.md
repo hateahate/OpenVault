@@ -13,8 +13,8 @@
 
 1. **Клонируйте репозиторий:**
    ```bash
-   git clone https://github.com/hateahate/OpenVault.git
-   cd OpenVault
+   git clone https://github.com/lockhive/LockHive.git
+   cd LockHive
 
 1. **Установите зависимости:**
    ```bash
