@@ -4,8 +4,8 @@ import NotesScreen from '../screens/NotesScreen';
 import AuthenticatorScreen from '../screens/AuthenticatorScreen';
 
 export const tabs = [
-    { name: 'Главная', component: HomeScreen, icon: 'home' },
-    { name: 'Пароли', component: Passwords, icon: 'lock' },
-    { name: 'Аутентификатор', component: AuthenticatorScreen, icon: 'key' },
-    { name: 'Заметки', component: NotesScreen, icon: 'note-text' }, // <-- Новая вкладка
+    { key: 'home', title: 'main_tabs', component: HomeScreen, icon: 'home' },
+    { key: 'passwords', title: 'passwords_tab', component: Passwords, icon: 'lock' },
+    { key: 'authenticator', title: 'authenticator_tab', component: AuthenticatorScreen, icon: 'key' },
+    { key: 'notes', title: 'notes_tab', component: NotesScreen, icon: 'note-text' },
 ];

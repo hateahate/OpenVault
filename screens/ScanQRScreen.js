@@ -5,6 +5,7 @@ import { loadAccounts, saveAccounts } from '../storage/secureStorage';
 import { useNavigation } from '@react-navigation/native';
 import { ScanQRScreenStyles as styles } from '../styles/ScanQRScreenStyles';
 import { parseOtpAuthUri } from '../utils/crypto/parseOtpAuthUri';
+import i18n from '../i18n'; // ✅ Добавляем импорт
 
 export default function ScanQRScreen() {
     const [permission, requestPermission] = useCameraPermissions();
@@ -25,28 +26,27 @@ export default function ScanQRScreen() {
                 const account = parseOtpAuthUri(data);
                 const accounts = await loadAccounts();
                 await saveAccounts([...accounts, account]);
-                Alert.alert('Успех', `Добавлен аккаунт: ${account.label}`, [
+                Alert.alert(i18n.t('success'), `${i18n.t('success_add_account')} ${account.label}`, [
                     { text: 'Ок', onPress: () => navigation.goBack() }
                 ]);
             } else {
-                Alert.alert('Ошибка', 'Некорректный QR-код.', [
+                Alert.alert(i18n.t('error'), i18n.t('invalid_qr'), [
                     { text: 'Ок', onPress: () => setScanned(false) }
                 ]);
             }
         } catch (error) {
             console.error(error);
-            Alert.alert('Ошибка', 'Ошибка обработки QR.', [
+            Alert.alert(i18n.t('error'), i18n.t('qr_processing_error'), [
                 { text: 'Ок', onPress: () => setScanned(false) }
             ]);
         }
     };
 
-
     if (!permission || !permission.granted) {
         return (
             <View style={styles.centered}>
                 <ActivityIndicator size="large" color="#6200ee" />
-                <Text>Запрашиваем доступ к камере...</Text>
+                <Text>{i18n.t('requesting_camera')}</Text>
             </View>
         );
     }

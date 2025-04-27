@@ -5,6 +5,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { AuthenticatorScreenStyles as styles } from '../styles/AuthenticatorScreenStyles';
 import { fetchAccounts, deleteAccount, saveEditedLabel } from '../utils/accounts';
 import AuthenticatorCard from '../components/AuthenticatorCard';
+import i18n from '../i18n'; // ✅ Добавляем импорт
 
 export default function AuthenticatorScreen() {
     const [accounts, setAccounts] = useState([]);
@@ -56,20 +57,24 @@ export default function AuthenticatorScreen() {
             item={item}
             index={index}
             onLongPress={(idx) =>
-                Alert.alert('Удалить аккаунт', 'Вы уверены?', [
-                    { text: 'Отмена', style: 'cancel' },
-                    { text: 'Удалить', style: 'destructive', onPress: () => handleDeleteAccount(idx) }
-                ])
+                Alert.alert(
+                    i18n.t('delete_account'),
+                    i18n.t('are_you_sure'),
+                    [
+                        { text: i18n.t('cancel'), style: 'cancel' },
+                        { text: i18n.t('delete_account'), style: 'destructive', onPress: () => handleDeleteAccount(idx) }
+                    ]
+                )
             }
             onPress={handlePress}
-            currentTime={currentTime} // ✅ Теперь всё правильно!
+            currentTime={currentTime}
         />
     );
 
     return (
         <View style={styles.container}>
             {accounts.length === 0 ? (
-                <Text style={styles.emptyText}>Пока нет аккаунтов</Text>
+                <Text style={styles.emptyText}>{i18n.t('no_accounts')}</Text>
             ) : (
                 <FlatList
                     data={accounts}
@@ -87,17 +92,17 @@ export default function AuthenticatorScreen() {
 
             <Portal>
                 <Dialog visible={editVisible} onDismiss={() => setEditVisible(false)}>
-                    <Dialog.Title>Редактировать</Dialog.Title>
+                    <Dialog.Title>{i18n.t('edit')}</Dialog.Title>
                     <Dialog.Content>
                         <TextInput
-                            label="Новое название"
+                            label={i18n.t('new_pin')}
                             value={newLabel}
                             onChangeText={setNewLabel}
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setEditVisible(false)}>Отмена</Button>
-                        <Button onPress={handleSaveEditedLabel}>Сохранить</Button>
+                        <Button onPress={() => setEditVisible(false)}>{i18n.t('cancel')}</Button>
+                        <Button onPress={handleSaveEditedLabel}>{i18n.t('save')}</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>

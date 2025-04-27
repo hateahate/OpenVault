@@ -1,50 +1,23 @@
-import React, { useEffect, useState } from 'react';
+// components/BottomNav.js
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as LocalAuthentication from 'expo-local-authentication';
+import { ActivityIndicator } from 'react-native-paper';
+import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { BottomNavStyles } from '../styles/BottomNavStyles';
+import * as LocalAuthentication from 'expo-local-authentication';
+import i18n from '../i18n'; // Добавили!
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomNav() {
-    const [lockedTabs, setLockedTabs] = useState({});
-
-    useEffect(() => {
-        const loadSettings = async () => {
-            const storedSettings = await AsyncStorage.getItem('appSettings');
-            if (storedSettings) {
-                const { tabLocks } = JSON.parse(storedSettings);
-                setLockedTabs(tabLocks);
-            }
-        };
-        loadSettings();
-    }, []);
-
-    const authenticate = async () => {
-        const result = await LocalAuthentication.authenticateAsync({
-            promptMessage: 'Введите PIN или используйте биометрию',
-        });
-        return result.success;
-    };
-
-    const ProtectedScreen = ({ component: Component, tabName }) => {
-        return async () => {
-            if (lockedTabs[tabName]) {
-                const success = await authenticate();
-                if (!success) {
-                    return null;
-                }
-            }
-            return <Component />;
-        };
-    };
+    const { settings } = useContext(AppContext);
 
     return (
         <Tab.Navigator
             screenOptions={({ route }) => {
-                const currentTab = tabs.find((tab) => tab.name === route.name);
+                const currentTab = tabs.find((tab) => tab.key === route.name);
                 return {
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons
@@ -59,16 +32,54 @@ export default function BottomNav() {
                     tabBarItemStyle: BottomNavStyles.tabBarItemStyle,
                     tabBarLabelStyle: BottomNavStyles.tabBarLabelStyle,
                     headerStyle: BottomNavStyles.headerStyle,
+                    tabBarLabel: i18n.t(currentTab?.title),
                 };
             }}
         >
             {tabs.map((tab) => (
                 <Tab.Screen
-                    key={tab.name}
-                    name={tab.name}
-                    component={ProtectedScreen({ component: tab.component, tabName: tab.name })}
+                    key={tab.key}
+                    name={tab.key}
+                    children={() => (
+                        <ProtectedScreenWrapper
+                            tabName={tab.key}
+                            component={tab.component}
+                            tabLocks={settings.tabLocks}
+                        />
+                    )}
                 />
             ))}
         </Tab.Navigator>
     );
+}
+
+function ProtectedScreenWrapper({ tabName, component: Component, tabLocks }) {
+    const [accessGranted, setAccessGranted] = React.useState(false);
+    const [checkingAccess, setCheckingAccess] = React.useState(true);
+
+    React.useEffect(() => {
+        const checkAccess = async () => {
+            if (tabLocks && tabLocks[tabName]) {
+                const result = await LocalAuthentication.authenticateAsync({
+                    promptMessage: 'Введите PIN или биометрию',
+                });
+                setAccessGranted(result.success);
+            } else {
+                setAccessGranted(true);
+            }
+            setCheckingAccess(false);
+        };
+
+        checkAccess();
+    }, []);
+
+    if (checkingAccess) {
+        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: 'center' }} />;
+    }
+
+    if (!accessGranted) {
+        return null; // Можно сюда поставить экран \"Нет доступа\" если захочешь
+    }
+
+    return <Component />;
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet, Text } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { FAB, Card, Title, Paragraph } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { loadNotes } from '../storage/secureStorage';
 import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
-
+import i18n from '../i18n'; // ✅ Добавляем импорт
 
 export default function NotesScreen() {
     const [notes, setNotes] = useState([]);
@@ -19,7 +19,7 @@ export default function NotesScreen() {
         setNotes(data);
     };
 
-    const renderItem = ({ item, index }) => (
+    const renderItem = ({ item }) => (
         <Card style={styles.card}>
             <Card.Content>
                 <Title numberOfLines={1}>{item.title}</Title>
@@ -31,7 +31,7 @@ export default function NotesScreen() {
     return (
         <View style={styles.container}>
             {notes.length === 0 ? (
-                <Text style={styles.emptyText}>Нет заметок. Нажмите "+" для создания!</Text>
+                <Text style={styles.emptyText}>{i18n.t('no_notes')}</Text>
             ) : (
                 <FlatList
                     data={notes}
