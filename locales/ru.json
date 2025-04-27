@@ -1,5 +1,5 @@
 {
-    "auth_prompt": "Введите PIN или используйте биометрию",
+    "auth_prompt": "Введите PIN устройства или используйте биометрию",
     "locked_tab": "Вкладка заблокирована",
     "unlock": "Разблокировать",
     "confirm_old_pin": "Подтвердите старый PIN",
@@ -13,6 +13,8 @@
     "pin_must_be_4_digits": "PIN должен содержать минимум 4 цифры",
     "enter_old_pin": "Введите старый PIN",
     "enter_new_pin": "Введите новый PIN",
+    "confirm_new_pin": "Подтвердите новый PIN",
+    "pins_do_not_match": "PIN-коды не совпадают",
     "set_pin": "Установить PIN",
     "change_pin": "Изменить PIN",
     "save_pin": "Сохранить PIN",
@@ -43,5 +45,8 @@
     "no_accounts": "Аутентификаторы не добавлены",
     "no_notes": "Заметок нет. Нажмите \"+\" для создания!",
     "remove": "Удалить",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "next": "Далее",
+    "enter_current_pin": "Введите текущий PIN",
+    "pin_code": "PIN код"
 }

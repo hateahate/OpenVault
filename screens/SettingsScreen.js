@@ -1,18 +1,15 @@
-// screens/SettingsScreen.js
-import React, { useState, useContext } from 'react';
-import { ScrollView, Alert } from 'react-native';
-import { Text, List, Switch, TextInput, Button, Divider, RadioButton } from 'react-native-paper';
+import React, { useContext } from 'react';
+import { ScrollView } from 'react-native';
+import { Text, List, Switch, Button, Divider, RadioButton } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { useTranslation } from 'react-i18next';
 import { SettingsScreenStyles as styles } from '../styles/SettingsScreenStyles';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SettingsScreen() {
     const {
         settings,
-        updatePinCode,
-        removePinCode,
-        verifyPin,
         toggleBiometric,
         updateTabLocks,
         updateLanguage,
@@ -21,52 +18,7 @@ export default function SettingsScreen() {
     } = useContext(AppContext);
 
     const { t } = useTranslation();
-
-    const [oldPinInput, setOldPinInput] = useState('');
-    const [newPinInput, setNewPinInput] = useState('');
-    const [step, setStep] = useState(settings.hasPin ? 'confirmOldPin' : 'setNewPin');
-
-    const handlePinProcess = async () => {
-        if (step === 'confirmOldPin') {
-            const isValid = await verifyPin(oldPinInput);
-            if (isValid) {
-                setStep('setNewPin');
-                setOldPinInput('');
-            } else {
-                Alert.alert(t('wrong_pin'), t('try_again'));
-                setOldPinInput('');
-            }
-        } else if (step === 'setNewPin') {
-            if (newPinInput.length >= 4) {
-                await updatePinCode(newPinInput);
-                setNewPinInput('');
-                setStep('confirmOldPin');
-                Alert.alert(t('success'), t('pin_updated'));
-            } else {
-                Alert.alert(t('invalid_pin'), t('pin_must_be_4_digits'));
-            }
-        }
-    };
-
-    const handleRemovePin = () => {
-        Alert.alert(
-            t('attention'),
-            t('remove_pin_warning'),
-            [
-                { text: t('cancel'), style: 'cancel' },
-                {
-                    text: t('remove'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        await removePinCode();
-                        setStep('setNewPin');
-                        setOldPinInput('');
-                        setNewPinInput('');
-                    },
-                },
-            ]
-        );
-    };
+    const navigation = useNavigation();
 
     const handleToggleBiometric = async (value) => {
         await toggleBiometric(value);
@@ -89,47 +41,30 @@ export default function SettingsScreen() {
         await toggleRequestAuthOnLaunch(value);
     };
 
+    const navigateToSetPin = () => {
+        navigation.navigate('SetPin');
+    };
+
+    const navigateToRemovePin = () => {
+        navigation.navigate('RemovePin');
+    };
+
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.sectionTitle}>
-                {settings.hasPin ? t('change_pin') : t('set_pin')}
-            </Text>
-
-            {settings.hasPin && step === 'confirmOldPin' && (
-                <TextInput
-                    label={t('enter_old_pin')}
-                    value={oldPinInput}
-                    onChangeText={setOldPinInput}
-                    secureTextEntry
-                    keyboardType="numeric"
-                    style={styles.input}
-                />
-            )}
-
-            {step === 'setNewPin' && (
-                <TextInput
-                    label={t('enter_new_pin')}
-                    value={newPinInput}
-                    onChangeText={setNewPinInput}
-                    secureTextEntry
-                    keyboardType="numeric"
-                    style={styles.input}
-                />
-            )}
+            <Text style={styles.sectionTitle}>{t('pin_code')}</Text>
 
             <Button
                 mode="contained"
-                onPress={handlePinProcess}
-                disabled={(step === 'confirmOldPin' && oldPinInput.length < 4) || (step === 'setNewPin' && newPinInput.length < 4)}
+                onPress={navigateToSetPin}
                 style={styles.button}
             >
-                {step === 'confirmOldPin' ? t('confirm') : t('save')}
+                {settings.hasPin ? t('change_pin') : t('set_pin')}
             </Button>
 
             {settings.hasPin && (
                 <Button
-                    mode="outlined"
-                    onPress={handleRemovePin}
+                    mode="contained"
+                    onPress={navigateToRemovePin}
                     style={[styles.button, { marginTop: 8 }]}
                 >
                     {t('remove_pin')}
@@ -168,18 +103,18 @@ export default function SettingsScreen() {
                             )}
                         />
                     ))}
+
+                    <Divider style={styles.divider} />
+
+                    <Text style={styles.sectionTitle}>{t('tab_timeout')}</Text>
+                    <RadioButton.Group onValueChange={handleChangeTimeout} value={String(settings.tabTimeout)}>
+                        <RadioButton.Item label={t('30_sec')} value="30" labelStyle={styles.radioTitle} />
+                        <RadioButton.Item label={t('1_min')} value="60" labelStyle={styles.radioTitle} />
+                        <RadioButton.Item label={t('5_min')} value="300" labelStyle={styles.radioTitle} />
+                        <RadioButton.Item label={t('never')} value="0" labelStyle={styles.radioTitle} />
+                    </RadioButton.Group>
                 </>
             )}
-
-            <Divider style={styles.divider} />
-
-            <Text style={styles.sectionTitle}>{t('tab_timeout')}</Text>
-            <RadioButton.Group onValueChange={handleChangeTimeout} value={String(settings.tabTimeout)}>
-                <RadioButton.Item label={t('30_sec')} value="30" labelStyle={styles.radioTitle} />
-                <RadioButton.Item label={t('1_min')} value="60" labelStyle={styles.radioTitle} />
-                <RadioButton.Item label={t('5_min')} value="300" labelStyle={styles.radioTitle} />
-                <RadioButton.Item label={t('never')} value="0" labelStyle={styles.radioTitle} />
-            </RadioButton.Group>
 
             <Divider style={styles.divider} />
 
@@ -202,6 +137,7 @@ export default function SettingsScreen() {
                     />
                 )}
             />
+            <Text style={{ marginBottom: 40 }} />
         </ScrollView>
     );
 }

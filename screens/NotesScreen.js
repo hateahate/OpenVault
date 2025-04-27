@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { loadNotes } from '../storage/secureStorage';
 import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
 import { useTranslation } from 'react-i18next'; // ✅
+import { theme } from '../styles/theme';
 
 export default function NotesScreen() {
     const [notes, setNotes] = useState([]);
@@ -44,7 +45,7 @@ export default function NotesScreen() {
             )}
             <FAB
                 style={styles.fab}
-                small
+                color={theme.colors.onPrimary}
                 icon="plus"
                 onPress={() => navigation.navigate('NewNote')}
             />

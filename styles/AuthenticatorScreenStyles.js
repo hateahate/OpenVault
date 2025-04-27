@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { theme } from './theme';
 
 export const AuthenticatorScreenStyles = StyleSheet.create({
     container: {
@@ -16,6 +17,6 @@ export const AuthenticatorScreenStyles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         bottom: 16,
-        backgroundColor: '#03DAC5',
+        backgroundColor: theme.colors.primary
     },
 });

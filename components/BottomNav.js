@@ -1,4 +1,3 @@
-// components/BottomNav.js
 import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,8 +5,8 @@ import { ActivityIndicator } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { BottomNavStyles } from '../styles/BottomNavStyles';
-import ProtectedScreenWrapper from './ProtectedScreenWrapper'; // ✅
-import { useTranslation } from 'react-i18next'; // ✅
+import ProtectedScreenWrapper from './ProtectedScreenWrapper';
+import { useTranslation } from 'react-i18next';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,6 +19,7 @@ export default function BottomNav() {
             screenOptions={({ route }) => {
                 const currentTab = tabs.find((tab) => tab.key === route.name);
                 return {
+                    headerTitle: t(currentTab?.title), // <-- ✅ Теперь локализация заголовка
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons
                             name={currentTab?.icon || 'circle'}

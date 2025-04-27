@@ -2,7 +2,7 @@
   "expo": {
     "name": "OpenVault",
     "slug": "openvault",
-    "version": "0.0.3",
+    "version": "0.0.4.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -27,7 +27,8 @@
         "BIOMETRIC",
         "USE_BIOMETRIC",
         "USE_FINGERPRINT"
-      ]
+      ],
+      "package": "com.stepanpavlenko.openvault"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,6 +36,11 @@
     "plugins": [
       "expo-localization",
       "expo-splash-screen"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b6075b8c-8a00-4083-ad7f-11256f738c4d"
+      }
+    }
   }
 }

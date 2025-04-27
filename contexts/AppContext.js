@@ -45,8 +45,8 @@ export function AppProvider({ children }) {
             if (settings.biometricEnabled && isAvailable && isEnrolled) {
                 const result = await LocalAuthentication.authenticateAsync({
                     promptMessage: settings.language === 'ru'
-                        ? 'Введите PIN или используйте биометрию'
-                        : 'Enter PIN or use Biometrics',
+                        ? 'Введите PIN устройства или используйте биометрию'
+                        : 'Enter device PIN or use biometrics',
                 });
                 setIsAuthenticated(result.success);
             } else if (settings.hasPin) {

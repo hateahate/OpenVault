@@ -7,6 +7,7 @@ import { AuthenticatorScreenStyles as styles } from '../styles/AuthenticatorScre
 import { fetchAccounts, deleteAccount, saveEditedLabel } from '../utils/accounts';
 import AuthenticatorCard from '../components/AuthenticatorCard';
 import { useTranslation } from 'react-i18next'; // ✅
+import { theme } from '../styles/theme';
 
 export default function AuthenticatorScreen() {
     const [accounts, setAccounts] = useState([]);
@@ -87,8 +88,8 @@ export default function AuthenticatorScreen() {
             )}
             <FAB
                 style={styles.fab}
-                small
                 icon="plus"
+                color={theme.colors.onPrimary}
                 onPress={() => navigation.navigate('ScanQR')}
             />
 

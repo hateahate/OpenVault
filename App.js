@@ -7,11 +7,14 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import BottomNav from './components/BottomNav';
 import ScanQRScreen from './screens/ScanQRScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import SetPinScreen from './screens/SetPinScreen';
+import RemovePinScreen from './screens/RemovePinScreen';
 import { AppProvider } from './contexts/AppContext';
 import AppContext from './contexts/AppContext';
 import './i18n';
 import * as SplashScreen from 'expo-splash-screen';
 import { useTranslation } from 'react-i18next';
+import { theme } from './styles/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,7 +23,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <AppProvider>
-      <PaperProvider>
+      <PaperProvider theme={theme}>
         <NavigationContainer>
           <MainNavigator />
         </NavigationContainer>
@@ -68,6 +71,8 @@ function MainNavigator() {
         component={SettingsScreen}
         options={{ title: t('settings') }}
       />
+      <Stack.Screen name="SetPin" component={SetPinScreen} options={{ title: t('set_pin') }} />
+      <Stack.Screen name="RemovePin" component={RemovePinScreen} options={{ title: t('remove_pin') }} />
     </Stack.Navigator>
   );
 }

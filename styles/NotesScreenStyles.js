@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { theme } from './theme';
 
 export const NotesScreenStyles = StyleSheet.create({
     container: {
@@ -22,6 +23,6 @@ export const NotesScreenStyles = StyleSheet.create({
         position: 'absolute',
         right: 16,
         bottom: 16,
-        backgroundColor: '#03DAC5',
+        backgroundColor: theme.colors.primary
     },
 });

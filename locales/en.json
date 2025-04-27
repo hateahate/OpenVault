@@ -1,5 +1,5 @@
 {
-    "auth_prompt": "Enter PIN or use Biometrics",
+    "auth_prompt": "Enter device PIN or use biometrics",
     "main_tabs": "Home",
     "passwords_tab": "Passwords",
     "authenticator_tab": "Authenticator",
@@ -47,5 +47,10 @@
     "confirm": "Confirm",
     "remove": "Remove",
     "set_pin": "Set PIN",
-    "enter_new_pin": "Enter new PIN"
+    "enter_new_pin": "Enter new PIN",
+    "confirm_new_pin": "Confirm new PIN",
+    "pins_do_not_match": "PINs do not match",
+    "next": "Next",
+    "enter_current_pin": "Enter your current PIN",
+    "pin_code": "PIN code"
 }

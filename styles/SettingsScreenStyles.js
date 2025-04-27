@@ -3,70 +3,32 @@ import { StyleSheet } from 'react-native';
 export const SettingsScreenStyles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#ffffff',
+        padding: 16,
+        backgroundColor: '#FAFAFA',
     },
     sectionTitle: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#000', // Все заголовки теперь черные
-        marginVertical: 20,
-    },
-    input: {
-        marginVertical: 12,
-        backgroundColor: '#f1f1f1',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ddd',
+        color: '#212121',
+        marginTop: 24,
+        marginBottom: 12,
     },
     button: {
-        marginVertical: 16,
-        backgroundColor: '#6200ee',
-        borderRadius: 8,
-        paddingVertical: 12,
-        justifyContent: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: '600',
+        marginTop: 12,
+        paddingVertical: 10,
+        borderRadius: 12,
     },
     divider: {
-        marginVertical: 16,
-        backgroundColor: '#e0e0e0',
+        marginVertical: 20,
         height: 1,
+        backgroundColor: '#E0E0E0',
     },
     listItemTitle: {
         fontSize: 16,
-        color: '#000', // Все тексты списка теперь черные
-        fontWeight: '500',
-    },
-    disabledText: {
-        color: '#999',
-    },
-    switchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    switchLabel: {
-        fontSize: 16,
-        color: '#000', // Текст переключателей черный
-        marginRight: 8,
-    },
-    sectionContent: {
-        paddingHorizontal: 20,
-        marginBottom: 20,
-    },
-    disabledButton: {
-        backgroundColor: '#d1d1d1',
+        color: '#424242',
     },
     radioTitle: {
-        color: '#000', // Цвет текста радио-кнопок черный
         fontSize: 16,
-        fontWeight: '600',
-    }
+        color: '#424242',
+    },
 });
