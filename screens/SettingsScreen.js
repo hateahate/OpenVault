@@ -143,7 +143,7 @@ export default function SettingsScreen() {
 
             <View style={styles.footerContainer}>
                 <Text style={styles.footerText}>
-                    OpenVault v{appVersion}{"\n"}
+                    LockHive v{appVersion}{"\n"}
                     Contact: stepan@pavlenko.lol{"\n"}
                 </Text>
             </View>

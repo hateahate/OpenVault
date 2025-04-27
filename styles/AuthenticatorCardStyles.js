@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { theme } from './theme';
 
 export const AuthenticatorCardStyles = StyleSheet.create({
     card: {
@@ -23,7 +24,7 @@ export const AuthenticatorCardStyles = StyleSheet.create({
         letterSpacing: 2,
     },
     progressBar: {
-        height: 4,
-        backgroundColor: '#6200ee',
+        height: 6,
+        backgroundColor: theme.colors.primary,
     },
 });
