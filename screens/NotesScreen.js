@@ -22,10 +22,8 @@ export default function NotesScreen() {
   };
 
   useEffect(() => {
-    (async () => {
-      await initNotesDb();
-      await loadNotes();
-    })();
+    initNotesDb();
+    loadNotes();
   }, []);
 
   const handleNotePress = (note) => {
@@ -74,24 +72,18 @@ export default function NotesScreen() {
     <View style={{ flex: 1 }}>
       <FlatList
         data={notes}
-        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <NoteCard
             note={item}
-            onPress={handleNotePress}
-            onToggleLock={handleToggleLock}
+            onPress={() => navigation.navigate('NoteView', { id: item.id })}
+            onToggleLock={() => handleToggleLock(item.id)}
           />
         )}
       />
 
-      <FAB
-        icon="plus"
-        style={{ position: 'absolute', bottom: 24, right: 24 }}
-        onPress={() => {
-          console.log('FAB нажата');
-          navigation.navigate('NoteEditor');
-        }}
-      />
+
+      <FAB icon="plus" onPress={() => navigation.navigate('NoteCreate')} />
+
 
       <PasswordPrompt
         visible={passwordDialogVisible}

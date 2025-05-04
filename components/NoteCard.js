@@ -1,24 +1,30 @@
+// components/NoteCard.js
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Card, Title, Paragraph, IconButton } from 'react-native-paper';
+import { Card, Paragraph, IconButton } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 export default function NoteCard({ note, onPress, onToggleLock }) {
+    const { t } = useTranslation();
+
     return (
         <Card style={styles.card} onPress={() => onPress(note)}>
             <Card.Title
                 title={note.title}
-                right={(props) =>
+                right={(props) => (
                     <IconButton
                         {...props}
                         icon={note.encrypted ? 'lock' : 'lock-open-variant'}
                         onPress={() => onToggleLock(note)}
-                        accessibilityLabel={note.encrypted ? 'Unlock note' : 'Lock note'}
+                        accessibilityLabel={
+                            note.encrypted ? t('unlock') : t('lock_note')
+                        }
                     />
-                }
+                )}
             />
             <Card.Content>
                 <Paragraph numberOfLines={2}>
-                    {note.encrypted ? '[Заметка зашифрована]' : note.content}
+                    {note.encrypted ? t('encrypted_note') : note.content}
                 </Paragraph>
             </Card.Content>
         </Card>

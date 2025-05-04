@@ -9,6 +9,8 @@ import ScanQRScreen from './screens/ScanQRScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SetPinScreen from './screens/SetPinScreen';
 import RemovePinScreen from './screens/RemovePinScreen';
+import NotesScreen from './screens/NotesScreen';
+import NoteViewScreen from './screens/NoteViewScreen';
 import NoteEditorScreen from './screens/NoteEditorScreen';
 import { AppProvider } from './contexts/AppContext';
 import AppContext from './contexts/AppContext';
@@ -72,11 +74,10 @@ function MainNavigator() {
         component={SettingsScreen}
         options={{ title: t('settings') }}
       />
-      <Stack.Screen
-        name="NoteEditor"
-        component={NoteEditorScreen}
-        options={{ title: t('new_note') }}
-      />
+      <Stack.Screen name="NotesList" component={NotesScreen} options={{ title: 'Заметки' }} />
+      <Stack.Screen name="NoteView" component={NoteViewScreen} options={{ title: 'Смотреть' }} />
+      <Stack.Screen name="NoteCreate" component={NoteEditorScreen} options={{ title: 'Новая заметка' }} />
+      <Stack.Screen name="NoteEdit" component={NoteEditorScreen} options={{ title: 'Редактировать' }} />
       <Stack.Screen name="SetPin" component={SetPinScreen} options={{ title: t('set_pin') }} />
       <Stack.Screen name="RemovePin" component={RemovePinScreen} options={{ title: t('remove_pin') }} />
     </Stack.Navigator>
