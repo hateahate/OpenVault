@@ -9,6 +9,7 @@ import ScanQRScreen from './screens/ScanQRScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import SetPinScreen from './screens/SetPinScreen';
 import RemovePinScreen from './screens/RemovePinScreen';
+import NoteEditorScreen from './screens/NoteEditorScreen';
 import { AppProvider } from './contexts/AppContext';
 import AppContext from './contexts/AppContext';
 import './i18n';
@@ -70,6 +71,11 @@ function MainNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{ title: t('settings') }}
+      />
+      <Stack.Screen
+        name="NoteEditor"
+        component={NoteEditorScreen}
+        options={{ title: t('new_note') }}
       />
       <Stack.Screen name="SetPin" component={SetPinScreen} options={{ title: t('set_pin') }} />
       <Stack.Screen name="RemovePin" component={RemovePinScreen} options={{ title: t('remove_pin') }} />

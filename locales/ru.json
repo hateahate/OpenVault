@@ -48,5 +48,7 @@
     "cancel": "Отмена",
     "next": "Далее",
     "enter_current_pin": "Введите текущий PIN",
-    "pin_code": "PIN код"
+    "pin_code": "PIN код",
+    "scan_qr": "Сканирование QR",
+    "requesting_camera": "Запрашиваем доступ к камере..."
 }

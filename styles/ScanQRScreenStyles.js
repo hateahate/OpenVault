@@ -8,6 +8,7 @@ export const ScanQRScreenStyles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 70
     },
     overlay: {
         position: 'absolute',

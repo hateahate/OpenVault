@@ -1,121 +1,111 @@
 // screens/NotesScreen.js
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, Alert } from 'react-native';
-import { FAB, Card, Title, Button } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
-import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
-import {
-  initNotesDb,
-  getNotes,
-  addNote,
-  deleteNote,
-  updateNote
-} from '../storage/notesDb';
-import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
+import { FAB, Snackbar } from 'react-native-paper';
+import { getNotes, addNote, deleteNote, updateNote, toggleEncryption, initNotesDb } from '../storage/notesDb';
+import NoteCard from '../components/NoteCard';
+import PasswordPrompt from '../components/PasswordPrompt';
+import { useNavigation } from '@react-navigation/native';
 
 export default function NotesScreen() {
   const [notes, setNotes] = useState([]);
-  const [showEditor, setShowEditor] = useState(false);
-  const [title, setTitle] = useState('');
-  const [editingNote, setEditingNote] = useState(null);
-  const editorRef = useRef(null);
-  const { t } = useTranslation();
+  const [passwordDialogVisible, setPasswordDialogVisible] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [passwordCallback, setPasswordCallback] = useState(() => () => { });
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '' });
+
+  const navigation = useNavigation();
+
+  const loadNotes = async () => {
+    const list = await getNotes();
+    setNotes(list);
+  };
 
   useEffect(() => {
-    initNotesDb();
-    loadNotes();
+    (async () => {
+      await initNotesDb();
+      await loadNotes();
+    })();
   }, []);
 
-  const loadNotes = () => {
-    getNotes(setNotes);
-  };
-
-  const handleSave = async () => {
-    const content = await editorRef.current?.getContentHtml();
-    if (!title || !content) return;
-
-    if (editingNote) {
-      updateNote(editingNote.id, { title, content }, loadNotes);
-    } else {
-      addNote({ title, content }, loadNotes);
-    }
-
-    setShowEditor(false);
-    setTitle('');
-    setEditingNote(null);
-    editorRef.current?.setContentHTML('');
-  };
-
-  const handleEdit = (note) => {
-    setShowEditor(true);
-    setTitle(note.title);
-    setEditingNote(note);
-    setTimeout(() => {
-      editorRef.current?.setContentHTML(note.content);
-    }, 100);
-  };
-
-  const handleDelete = (note) => {
-    Alert.alert(
-      t('delete_note'),
-      t('are_you_sure'),
-      [
-        { text: t('cancel'), style: 'cancel' },
-        { text: t('delete'), style: 'destructive', onPress: () => {
-            deleteNote(note.id, loadNotes);
-          }
+  const handleNotePress = (note) => {
+    if (note.encrypted) {
+      setPasswordDialogVisible(true);
+      setSelectedNote(note);
+      setPasswordCallback(() => async (password) => {
+        const ok = await toggleEncryption(note.id, password);
+        if (ok) {
+          setSnackbar({ visible: true, message: 'Заметка расшифрована' });
+          loadNotes();
+        } else {
+          setSnackbar({ visible: true, message: 'Неверный пароль' });
         }
-      ]
-    );
+      });
+    } else {
+      Alert.alert('Заметка', note.content);
+    }
   };
 
-  const renderItem = ({ item }) => (
-    <Card style={styles.card} onPress={() => handleEdit(item)} onLongPress={() => handleDelete(item)}>
-      <Card.Content>
-        <Title>{item.title}</Title>
-      </Card.Content>
-    </Card>
-  );
+  const handleToggleLock = (note) => {
+    setPasswordDialogVisible(true);
+    setSelectedNote(note);
+    setPasswordCallback(() => async (password) => {
+      const ok = await toggleEncryption(note.id, password);
+      if (ok) {
+        setSnackbar({ visible: true, message: note.encrypted ? 'Заметка расшифрована' : 'Заметка зашифрована' });
+        loadNotes();
+      } else {
+        setSnackbar({ visible: true, message: 'Ошибка при обработке' });
+      }
+    });
+  };
 
-  if (showEditor) {
-    return (
-      <View style={styles.container}>
-        <RichEditor
-          ref={editorRef}
-          placeholder={t('no_notes')}
-          initialHeight={250}
-          style={{ borderColor: '#ccc', borderWidth: 1, marginBottom: 8 }}
-        />
-        <RichToolbar editor={editorRef} actions={[actions.setBold, actions.setItalic, actions.insertBulletsList, actions.insertOrderedList, actions.insertLink]} />
-        <Button mode="contained" onPress={handleSave} style={{ marginTop: 16 }}>
-          {editingNote ? t('save') : t('save_note')}
-        </Button>
-        <Button onPress={() => setShowEditor(false)} style={{ marginTop: 8 }}>
-          {t('cancel')}
-        </Button>
-      </View>
-    );
-  }
+  const handlePasswordSubmit = (password) => {
+    passwordCallback(password);
+    setPasswordDialogVisible(false);
+  };
+
+  const handleAddNote = async () => {
+    await addNote({ title: 'Новая заметка', content: '...' });
+    loadNotes();
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={notes}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        renderItem={({ item }) => (
+          <NoteCard
+            note={item}
+            onPress={handleNotePress}
+            onToggleLock={handleToggleLock}
+          />
+        )}
       />
+
       <FAB
-        style={styles.fab}
-        small
         icon="plus"
+        style={{ position: 'absolute', bottom: 24, right: 24 }}
         onPress={() => {
-          setShowEditor(true);
-          setTitle('');
-          setEditingNote(null);
-          setTimeout(() => editorRef.current?.setContentHTML(''), 100);
+          console.log('FAB нажата');
+          navigation.navigate('NoteEditor');
         }}
       />
+
+      <PasswordPrompt
+        visible={passwordDialogVisible}
+        onSubmit={handlePasswordSubmit}
+        onDismiss={() => setPasswordDialogVisible(false)}
+      />
+
+      <Snackbar
+        visible={snackbar.visible}
+        onDismiss={() => setSnackbar({ visible: false, message: '' })}
+        duration={3000}
+      >
+        {snackbar.message}
+      </Snackbar>
     </View>
   );
 }

@@ -52,5 +52,14 @@
     "pins_do_not_match": "PINs do not match",
     "next": "Next",
     "enter_current_pin": "Enter your current PIN",
-    "pin_code": "PIN code"
+    "pin_code": "PIN code",
+    "encrypted_note": "Encrypted note",
+    "set_password": "Set password",
+    "enter_password": "Enter password",
+    "note_encrypted": "Note encrypted",
+    "note_decrypted": "Note decrypted",
+    "wrong_password": "Wrong password",
+    "new_note": "New note",
+    "note_title": "Title",
+    "note_placeholder": "Enter your note here..."
 }
