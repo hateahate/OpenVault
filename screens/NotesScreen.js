@@ -1,102 +1,65 @@
-// screens/NotesScreen.js
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Alert } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, FlatList } from 'react-native';
 import { FAB, Snackbar } from 'react-native-paper';
-import { getNotes, addNote, deleteNote, updateNote, toggleEncryption, initNotesDb } from '../storage/notesDb';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { initNotesDb, getNotes, encryptNote } from '../storage/notesDb';
 import NoteCard from '../components/NoteCard';
 import PasswordPrompt from '../components/PasswordPrompt';
-import { useNavigation } from '@react-navigation/native';
 
 export default function NotesScreen() {
   const [notes, setNotes] = useState([]);
-  const [passwordDialogVisible, setPasswordDialogVisible] = useState(false);
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [passwordCallback, setPasswordCallback] = useState(() => () => { });
-  const [snackbar, setSnackbar] = useState({ visible: false, message: '' });
+  const [passDialog, setPassDialog] = useState(false);
+  const [activeNote, setActiveNote] = useState(null);
+  const [snack, setSnack] = useState({ visible: false, message: '' });
+  const nav = useNavigation();
 
-  const navigation = useNavigation();
-
-  const loadNotes = async () => {
-    const list = await getNotes();
-    setNotes(list);
-  };
+  const load = async () => setNotes(await getNotes());
 
   useEffect(() => {
-    initNotesDb();
-    loadNotes();
+    initNotesDb().then(load);
   }, []);
 
-  const handleNotePress = (note) => {
-    if (note.encrypted) {
-      setPasswordDialogVisible(true);
-      setSelectedNote(note);
-      setPasswordCallback(() => async (password) => {
-        const ok = await toggleEncryption(note.id, password);
-        if (ok) {
-          setSnackbar({ visible: true, message: 'Заметка расшифрована' });
-          loadNotes();
-        } else {
-          setSnackbar({ visible: true, message: 'Неверный пароль' });
-        }
-      });
-    } else {
-      Alert.alert('Заметка', note.content);
-    }
+  useFocusEffect(useCallback(load, []));
+
+  const onToggleLock = note => {
+    setActiveNote(note);
+    setPassDialog(true);
   };
 
-  const handleToggleLock = (note) => {
-    setPasswordDialogVisible(true);
-    setSelectedNote(note);
-    setPasswordCallback(() => async (password) => {
-      const ok = await toggleEncryption(note.id, password);
-      if (ok) {
-        setSnackbar({ visible: true, message: note.encrypted ? 'Заметка расшифрована' : 'Заметка зашифрована' });
-        loadNotes();
-      } else {
-        setSnackbar({ visible: true, message: 'Ошибка при обработке' });
-      }
-    });
-  };
-
-  const handlePasswordSubmit = (password) => {
-    passwordCallback(password);
-    setPasswordDialogVisible(false);
-  };
-
-  const handleAddNote = async () => {
-    await addNote({ title: 'Новая заметка', content: '...' });
-    loadNotes();
+  const onPassSubmit = async pwd => {
+    setPassDialog(false);
+    const ok = await encryptNote(activeNote.id, pwd);
+    setSnack({ visible: true, message: ok ? '🔒 Зашифровано' : '❌ Ошибка' });
+    load();
   };
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
         data={notes}
-        renderItem={({ item }) => (
-          <NoteCard
-            note={item}
-            onPress={() => navigation.navigate('NoteView', { id: item.id })}
-            onToggleLock={() => handleToggleLock(item.id)}
-          />
-        )}
+        keyExtractor={i => i.id.toString()}
+        renderItem={({ item }) => <NoteCard note={item} onToggleLock={onToggleLock} />}
       />
 
-
-      <FAB icon="plus" onPress={() => navigation.navigate('NoteCreate')} />
-
+      <FAB
+        icon="plus"
+        style={{ position: 'absolute', bottom: 16, right: 16, width: 56, height: 56, borderRadius: 28 }}
+        onPress={() => nav.navigate('NoteEditor')}
+      />
 
       <PasswordPrompt
-        visible={passwordDialogVisible}
-        onSubmit={handlePasswordSubmit}
-        onDismiss={() => setPasswordDialogVisible(false)}
+        visible={passDialog}
+        title="Установить пароль"
+        onSubmit={onPassSubmit}
+        onDismiss={() => setPassDialog(false)}
       />
 
       <Snackbar
-        visible={snackbar.visible}
-        onDismiss={() => setSnackbar({ visible: false, message: '' })}
-        duration={3000}
+        visible={snack.visible}
+        onDismiss={() => setSnack({ visible: false, message: '' })}
+        duration={2000}
       >
-        {snackbar.message}
+        {snack.message}
       </Snackbar>
     </View>
   );

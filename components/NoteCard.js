@@ -1,31 +1,49 @@
-// components/NoteCard.js
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { Card, Paragraph, IconButton } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 
-export default function NoteCard({ note, onPress, onToggleLock }) {
-    const { t } = useTranslation();
+export default function NoteCard({ note, onToggleLock, onDelete }) {
+    const navigation = useNavigation();
+
+    const handlePress = () => {
+        navigation.navigate('NoteView', { id: note.id });
+    };
+
+    const confirmDelete = () => {
+        Alert.alert(
+            'Удалить заметку',
+            'Вы уверены, что хотите удалить эту заметку?',
+            [
+                { text: 'Отмена', style: 'cancel' },
+                { text: 'Удалить', style: 'destructive', onPress: () => onDelete(note.id) }
+            ]
+        );
+    };
 
     return (
-        <Card style={styles.card} onPress={() => onPress(note)}>
+        <Card style={styles.card} onPress={handlePress}>
             <Card.Title
                 title={note.title}
-                right={(props) => (
-                    <IconButton
-                        {...props}
-                        icon={note.encrypted ? 'lock' : 'lock-open-variant'}
-                        onPress={() => onToggleLock(note)}
-                        accessibilityLabel={
-                            note.encrypted ? t('unlock') : t('lock_note')
-                        }
-                    />
+                right={props => (
+                    <View style={styles.icons}>
+                        <IconButton
+                            {...props}
+                            icon={note.encrypted ? 'lock' : 'lock-open-variant'}
+                            onPress={() => onToggleLock(note)}
+                        />
+                        <IconButton
+                            {...props}
+                            icon="delete"
+                            onPress={confirmDelete}
+                        />
+                    </View>
                 )}
             />
             <Card.Content>
-                <Paragraph numberOfLines={2}>
-                    {note.encrypted ? t('encrypted_note') : note.content}
-                </Paragraph>
+                <Text variant="bodyMedium" numberOfLines={3}>
+                    {note.encrypted ? '🔒 Заметка зашифрована' : (note.content || '—')}
+                </Text>
             </Card.Content>
         </Card>
     );
@@ -33,9 +51,13 @@ export default function NoteCard({ note, onPress, onToggleLock }) {
 
 const styles = StyleSheet.create({
     card: {
-        marginVertical: 6,
         marginHorizontal: 12,
+        marginVertical: 6,
         borderRadius: 16,
         elevation: 2,
+    },
+    icons: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });

@@ -1,12 +1,12 @@
-// components/MarkdownNoteEditor.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     StyleSheet,
     TextInput,
     TouchableOpacity,
     Text,
-    Platform,
+    KeyboardAvoidingView,
+    Platform
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { useTheme } from 'react-native-paper';
@@ -14,111 +14,102 @@ import { useTheme } from 'react-native-paper';
 const ToolbarButton = ({ label, onPress }) => {
     const { colors } = useTheme();
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.btn, { borderColor: colors.primary }]}>
+        <TouchableOpacity style={[styles.btn, { borderColor: colors.primary }]} onPress={onPress}>
             <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{label}</Text>
         </TouchableOpacity>
     );
 };
 
-export default function MarkdownNoteEditor({
-    initialContent = '',
-    onSave,
-    initialTitle = '',
-    onTitleChange = () => { },
-    title
-}) {
+export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
     const [text, setText] = useState(initialContent);
-    const [selection, setSelection] = useState({ start: 0, end: 0 });
+    const [sel, setSel] = useState({ start: 0, end: 0 });
     const [preview, setPreview] = useState(false);
 
-    const wrap = (marker, suffix = marker) => {
-        const { start, end } = selection;
+    useEffect(() => {
+        setText(initialContent);
+    }, [initialContent]);
+
+    const wrap = (marker) => {
+        const { start, end } = sel;
         const before = text.slice(0, start);
-        const middle = text.slice(start, end);
+        const mid = text.slice(start, end);
         const after = text.slice(end);
-        const newText = before + marker + middle + suffix + after;
-        const cursor = end + marker.length + suffix.length;
-        setText(newText);
-        setSelection({ start: cursor, end: cursor });
+        const nt = before + marker + mid + marker + after;
+        setText(nt);
+        setSel({ start: end + marker.length * 2, end: end + marker.length * 2 });
     };
 
-    const insertAtLine = (prefix) => {
-        const { start } = selection;
+    const insertLine = (prefix) => {
+        const { start } = sel;
         const lines = text.split('\n');
-        let count = 0, idx = 0;
+        let cnt = 0, idx = 0;
         for (let i = 0; i < lines.length; i++) {
-            if (count + lines[i].length >= start) { idx = i; break; }
-            count += lines[i].length + 1;
+            if (cnt + lines[i].length >= start) { idx = i; break; }
+            cnt += lines[i].length + 1;
         }
         lines[idx] = prefix + lines[idx];
         setText(lines.join('\n'));
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                value={title}
-                onChangeText={onTitleChange}
-                placeholder="Заголовок"
-                style={[styles.input, styles.title]}
-                mode="outlined"
-            />
-
+        <KeyboardAvoidingView behavior="padding" style={styles.container}>
             <View style={styles.toolbar}>
                 <ToolbarButton label="B" onPress={() => wrap('**')} />
                 <ToolbarButton label="I" onPress={() => wrap('_')} />
-                <ToolbarButton label="H1" onPress={() => insertAtLine('# ')} />
-                <ToolbarButton label="•" onPress={() => insertAtLine('- ')} />
+                <ToolbarButton label="H1" onPress={() => insertLine('# ')} />
+                <ToolbarButton label="•" onPress={() => insertLine('- ')} />
                 <ToolbarButton label={preview ? '✎' : '👁'} onPress={() => setPreview(!preview)} />
             </View>
 
             {preview ? (
                 <View style={styles.preview}>
-                    <Markdown>{text || '_Нет содержимого_'}</Markdown>
+                    <Markdown style={mdStyles}>{text || '_Нет содержимого_'}</Markdown>
                 </View>
             ) : (
                 <TextInput
                     style={[styles.input, styles.editor]}
                     multiline
+                    scrollEnabled
                     value={text}
                     onChangeText={setText}
                     placeholder="Введите текст заметки..."
                     textAlignVertical="top"
-                    selection={selection}
-                    onSelectionChange={({ nativeEvent: { selection } }) => setSelection(selection)}
+                    selection={sel}
+                    onSelectionChange={e => setSel(e.nativeEvent.selection)}
                 />
             )}
 
             <TouchableOpacity style={styles.saveBtn} onPress={() => onSave(text)}>
                 <Text style={styles.saveText}>Сохранить</Text>
             </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16 },
-    input: {
-        borderWidth: 1,
-        borderColor: '#CCC',
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: Platform.OS === 'ios' ? 12 : 8,
-        marginBottom: 12,
-    },
-    title: { fontSize: 18, fontWeight: 'bold' },
-    editor: { flex: 1, minHeight: 200 },
+    container: { flex: 1, padding: 16, backgroundColor: 'white' },
     toolbar: {
         flexDirection: 'row',
         marginBottom: 8,
         justifyContent: 'space-around',
+        backgroundColor: 'white',
+        zIndex: 10
     },
     btn: {
         borderWidth: 1,
         borderRadius: 4,
         paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingVertical: 4
     },
+    input: {
+        borderWidth: 1,
+        borderColor: '#CCC',
+        borderRadius: 8,
+        padding: 12,
+        backgroundColor: 'white',
+        color: '#222'
+    },
+    editor: { flex: 1, minHeight: 200, marginBottom: 12 },
     preview: {
         flex: 1,
         borderWidth: 1,
@@ -126,13 +117,22 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 8,
         backgroundColor: '#FAFAFA',
+        marginBottom: 12
     },
     saveBtn: {
         backgroundColor: '#6200ee',
         borderRadius: 4,
         padding: 12,
         alignItems: 'center',
-        marginTop: 12,
+        marginTop: 8
     },
-    saveText: { color: 'white', fontWeight: 'bold' },
+    saveText: { color: 'white', fontWeight: 'bold' }
 });
+
+const mdStyles = {
+    body: { color: '#222', fontSize: 16, lineHeight: 24 },
+    heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 8 },
+    strong: { fontWeight: 'bold' },
+    em: { fontStyle: 'italic' },
+    listItemText: { marginVertical: 4 },
+};

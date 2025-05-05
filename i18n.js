@@ -1,7 +1,6 @@
-// i18n.js
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization'; // ✅ Expo-way
+import * as Localization from 'expo-localization';
 
 import en from './locales/en.json';
 import ru from './locales/ru.json';
@@ -15,11 +14,11 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: Localization.locale.startsWith('ru') ? 'ru' : 'en', // Автоопределение языка
-        fallbackLng: 'en', // Английский по умолчанию
+        lng: Localization.locale.startsWith('ru') ? 'ru' : 'en',
+        fallbackLng: 'en',
         compatibilityJSON: 'v3',
         interpolation: {
-            escapeValue: false, // Для React экранировать не нужно
+            escapeValue: false,
         },
     });
 

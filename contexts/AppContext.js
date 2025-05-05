@@ -12,7 +12,7 @@ const defaultSettings = {
     tabLocks: {},
     language: 'ru',
     requestAuthOnLaunch: true,
-    tabTimeout: 120, // новое поле — таймаут вкладки в секундах
+    tabTimeout: 120,
 };
 
 export function AppProvider({ children }) {

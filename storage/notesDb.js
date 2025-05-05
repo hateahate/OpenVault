@@ -1,5 +1,3 @@
-// storage/notesDb.js
-
 import { openDatabaseSync } from 'expo-sqlite';
 import { encrypt as aesEncrypt, decrypt as aesDecrypt } from '../utils/crypto/aesUtils';
 
@@ -19,8 +17,6 @@ export async function initNotesDb() {
         created_at  TEXT
       );
     `);
-    // Если вы обновляете старую версию без колонки encrypted, раскомментируйте:
-    // try { await db.runAsync(`ALTER TABLE notes ADD COLUMN encrypted INTEGER DEFAULT 0;`); } catch {}
   } catch (error) {
     console.error('Error creating notes table:', error);
   }
@@ -65,18 +61,37 @@ export async function getNotes() {
 }
 
 /**
- * Обновление существующей заметки: изменяем title/content и сбрасываем флаг encrypted.
+ * Получение одной заметки по ID
  */
-export async function updateNote(id, { title, content }) {
+export async function getNoteById(id) {
   try {
-    await db.runAsync(
-      `UPDATE notes
-          SET title     = ?,
-              content   = ?,
-              encrypted = 0
-        WHERE id = ?`,
-      [title, content, id]
+    const row = await db.getFirstAsync(
+      `SELECT * FROM notes WHERE id = ?`,
+      [id]
     );
+    return row || null;
+  } catch (error) {
+    console.error('Get note by ID error:', error);
+    return null;
+  }
+}
+
+/**
+ * Обновление заметки без сброса encrypted (если не указано явно).
+ */
+export async function updateNote(id, { title, content, resetEncryption = false }) {
+  try {
+    if (resetEncryption) {
+      await db.runAsync(
+        `UPDATE notes SET title = ?, content = ?, encrypted = 0 WHERE id = ?`,
+        [title, content, id]
+      );
+    } else {
+      await db.runAsync(
+        `UPDATE notes SET title = ?, content = ? WHERE id = ?`,
+        [title, content, id]
+      );
+    }
   } catch (error) {
     console.error('Update note error:', error);
   }
@@ -100,9 +115,6 @@ export async function deleteNote(id) {
 
 /**
  * Шифрует существующую незашифрованную заметку и выставляет encrypted=1.
- * @param {number} id — идентификатор заметки
- * @param {string} password — пароль для AES
- * @returns {boolean} — true, если успешно, false при ошибке
  */
 export async function encryptNote(id, password) {
   try {
@@ -110,16 +122,10 @@ export async function encryptNote(id, password) {
       `SELECT content, encrypted FROM notes WHERE id = ?`,
       [id]
     );
-    if (!row || row.encrypted) {
-      // либо нет такой записи, либо уже зашифровано
-      return false;
-    }
+    if (!row || row.encrypted) return false;
     const cipher = aesEncrypt(row.content, password);
     await db.runAsync(
-      `UPDATE notes
-          SET content   = ?,
-              encrypted = 1
-        WHERE id = ?`,
+      `UPDATE notes SET content = ?, encrypted = 1 WHERE id = ?`,
       [cipher, id]
     );
     return true;
@@ -130,11 +136,7 @@ export async function encryptNote(id, password) {
 }
 
 /**
- * Расшифровывает содержимое зашифрованной заметки и возвращает plain text.
- * Флаг encrypted в БД не сбрасывается.
- * @param {number} id — идентификатор заметки
- * @param {string} password — пароль для AES
- * @returns {string|null} — расшифрованный текст или null при неверном пароле/ошибке
+ * Расшифровывает содержимое зашифрованной заметки (флаг encrypted сохраняется).
  */
 export async function decryptNoteContent(id, password) {
   try {
@@ -142,10 +144,8 @@ export async function decryptNoteContent(id, password) {
       `SELECT content, encrypted FROM notes WHERE id = ?`,
       [id]
     );
-    if (!row || !row.encrypted) {
-      // либо нет записи, либо она не зашифрована
-      return row ? row.content : null;
-    }
+    if (!row) return null;
+    if (!row.encrypted) return row.content;
     const plain = aesDecrypt(row.content, password);
     return plain === '' ? null : plain;
   } catch (error) {

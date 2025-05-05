@@ -1,78 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert } from 'react-native';
-import { Button, TextInput } from 'react-native-paper';
-import MarkdownNoteEditor from '../components/MarkdownEditorScreen';
+import { View, Alert, StyleSheet } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { TextInput } from 'react-native-paper';
+import MarkdownEditorScreen from '../components/MarkdownEditorScreen';
 import {
+    initNotesDb,
+    getNotes,
     addNote,
     updateNote,
-    decryptNoteContent,
-    getNotes
+    decryptNoteContent
 } from '../storage/notesDb';
 import PasswordPrompt from '../components/PasswordPrompt';
 
-export default function NoteEditorScreen({ route, navigation }) {
-    const isEdit = !!route.params?.id;
+export default function NoteEditorScreen() {
+    const nav = useNavigation();
+    const route = useRoute();
+    const id = route.params?.id;
+    const isEdit = !!id;
+
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [askPass, setAskPass] = useState(false);
+    const [initialContent, setInitialContent] = useState('');
+    const [ask, setAsk] = useState(false);
 
     useEffect(() => {
-        if (isEdit) {
-            const id = route.params.id;
-            (async () => {
+        (async () => {
+            await initNotesDb();
+            if (isEdit) {
                 const all = await getNotes();
-                const note = all.find(n => n.id === id);
-                if (!note) return navigation.goBack();
-                if (note.encrypted) {
-                    setAskPass(true);
-                } else {
-                    setTitle(note.title);
-                    setContent(note.content);
+                const n = all.find(x => x.id === id);
+                if (!n) return nav.goBack();
+                if (n.encrypted) setAsk(true);
+                else {
+                    setTitle(n.title);
+                    setInitialContent(n.content || '');
                 }
-            })();
-        }
+            }
+        })();
     }, []);
 
-    const handlePass = async (pwd) => {
-        const text = await decryptNoteContent(route.params.id, pwd);
-        if (text === null) {
+    const handlePassword = async password => {
+        const txt = await decryptNoteContent(id, password);
+        if (!txt) {
             Alert.alert('Ошибка', 'Неверный пароль');
         } else {
-            const note = (await getNotes()).find(n => n.id === route.params.id);
+            const note = (await getNotes()).find(x => x.id === id);
             setTitle(note.title);
-            setContent(text);
-            setAskPass(false);
+            setInitialContent(txt);
+            setAsk(false);
         }
     };
 
-    const handleSave = async (newContent) => {
-        if (!title.trim() || !newContent.trim()) {
-            return Alert.alert('Ошибка', 'Пустая заметка');
+    const handleSave = async content => {
+        if (!title.trim() || !content.trim()) {
+            Alert.alert('Ошибка', 'Пустая заметка');
+            return;
         }
+
         if (isEdit) {
-            await updateNote(route.params.id, { title, content: newContent });
+            await updateNote(id, { title, content });
         } else {
-            await addNote({ title, content: newContent });
+            await addNote({ title, content });
         }
-        navigation.goBack();
+
+        nav.goBack();
     };
 
-    if (askPass) {
-        return <PasswordPrompt visible onSubmit={handlePass} onDismiss={() => navigation.goBack()} />;
+    if (ask) {
+        return (
+            <PasswordPrompt
+                visible
+                title="Введите пароль"
+                onSubmit={handlePassword}
+                onDismiss={() => nav.goBack()}
+            />
+        );
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
             <TextInput
                 label="Заголовок"
                 value={title}
                 onChangeText={setTitle}
                 mode="outlined"
-                style={{ margin: 16 }}
+                style={styles.title}
             />
-            <MarkdownNoteEditor
-                initialContent={content}
-                initialTitle={title}
+            <MarkdownEditorScreen
+                initialContent={initialContent}
                 title={title}
                 onTitleChange={setTitle}
                 onSave={handleSave}
@@ -80,3 +94,8 @@ export default function NoteEditorScreen({ route, navigation }) {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: 'white' },
+    title: { margin: 16 }
+});

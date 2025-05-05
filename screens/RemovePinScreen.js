@@ -1,4 +1,3 @@
-// screens/RemovePinScreen.js
 import React, { useState, useContext } from 'react';
 import { View } from 'react-native';
 import { Text, Button, TextInput } from 'react-native-paper';

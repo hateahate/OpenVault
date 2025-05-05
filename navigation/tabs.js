@@ -1,4 +1,3 @@
-// navigation/tabs.js
 import HomeScreen from '../screens/HomeScreen';
 import Passwords from '../screens/Passwords';
 import NotesScreen from '../screens/NotesScreen';

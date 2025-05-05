@@ -1,49 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert } from 'react-native';
-import { Button } from 'react-native-paper';
+import { View, Alert, StyleSheet } from 'react-native';
+import { Text, Button } from 'react-native-paper';
+import Markdown from 'react-native-markdown-display';
 import { getNotes, decryptNoteContent } from '../storage/notesDb';
 import PasswordPrompt from '../components/PasswordPrompt';
 
 export default function NoteViewScreen({ route, navigation }) {
     const { id } = route.params;
     const [note, setNote] = useState(null);
-    const [askPass, setAskPass] = useState(false);
+    const [needPass, setNeedPass] = useState(false);
+    const [plain, setPlain] = useState('');
 
     useEffect(() => {
         (async () => {
-            const all = await getNotes();
-            const entry = all.find(n => n.id === id);
-            if (!entry) return navigation.goBack();
-            if (entry.encrypted) {
-                setAskPass(true);
-            } else {
-                setNote(entry);
-            }
+            const list = await getNotes();
+            const n = list.find(x => x.id === id);
+            if (!n) return navigation.goBack();
+            setNote(n);
+            if (n.encrypted) setNeedPass(true);
+            else setPlain(n.content || '');
         })();
     }, []);
 
-    const onSubmitPass = async (pwd) => {
-        const content = await decryptNoteContent(id, pwd);
-        if (content === null) {
+    const onPasswordSubmit = async pwd => {
+        const txt = await decryptNoteContent(id, pwd);
+        if (!txt) {
             Alert.alert('Ошибка', 'Неверный пароль');
         } else {
-            setNote({ ...note, content });
-            setAskPass(false);
+            setPlain(txt);
+            setNeedPass(false);
         }
     };
 
-    if (askPass) {
-        return <PasswordPrompt visible onSubmit={onSubmitPass} onDismiss={() => navigation.goBack()} />;
-    }
     if (!note) return null;
 
+    if (needPass) {
+        return (
+            <PasswordPrompt
+                visible
+                title="Введите пароль для расшифровки"
+                onSubmit={onPasswordSubmit}
+                onDismiss={() => navigation.goBack()}
+            />
+        );
+    }
+
     return (
-        <View style={{ flex: 1, padding: 16 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{note.title}</Text>
-            <Text style={{ marginVertical: 12 }}>{note.content}</Text>
-            <Button mode="contained" onPress={() => navigation.navigate('NoteEdit', { id })}>
+        <View style={styles.container}>
+            <Text style={styles.title}>{note.title}</Text>
+            <Markdown style={mdStyles}>{plain}</Markdown>
+            <Button
+                mode="contained"
+                style={styles.editBtn}
+                onPress={() => navigation.navigate('NoteEditor', { id })}
+            >
                 Редактировать
             </Button>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: { flex: 1, padding: 16, backgroundColor: 'white' },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
+    editBtn: { marginTop: 16 },
+});
+
+const mdStyles = {
+    body: { color: '#222', fontSize: 16, lineHeight: 24 },
+    heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 8 },
+    strong: { fontWeight: 'bold' },
+    em: { fontStyle: 'italic' },
+};

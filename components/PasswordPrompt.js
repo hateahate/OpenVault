@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
-import { Dialog, Portal, TextInput, Button } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { Dialog, Portal, Button, TextInput, Paragraph } from 'react-native-paper';
 
-export default function PasswordPrompt({ visible, onSubmit, onDismiss, title = 'Введите пароль' }) {
+export default function PasswordPrompt({ visible, title = 'Введите пароль', onSubmit, onDismiss }) {
     const [password, setPassword] = useState('');
 
-    const handleConfirm = () => {
-        onSubmit(password);
-        setPassword('');
-    };
-
-    const handleCancel = () => {
-        onDismiss();
-        setPassword('');
-    };
+    useEffect(() => {
+        if (visible) setPassword('');
+    }, [visible]);
 
     return (
         <Portal>
-            <Dialog visible={visible} onDismiss={handleCancel}>
+            <Dialog visible={visible} onDismiss={onDismiss}>
                 <Dialog.Title>{title}</Dialog.Title>
                 <Dialog.Content>
+                    <Paragraph style={{ marginBottom: 8, color: '#b00020' }}>
+                        ⚠️ Запомните этот пароль! Если вы его забудете, расшифровать заметку будет невозможно.
+                    </Paragraph>
                     <TextInput
                         label="Пароль"
-                        secureTextEntry
                         value={password}
                         onChangeText={setPassword}
+                        secureTextEntry
+                        autoFocus
                     />
                 </Dialog.Content>
                 <Dialog.Actions>
-                    <Button onPress={handleCancel}>Отмена</Button>
-                    <Button onPress={handleConfirm}>ОК</Button>
+                    <Button onPress={onDismiss}>Отмена</Button>
+                    <Button onPress={() => onSubmit(password)} disabled={!password}>ОК</Button>
                 </Dialog.Actions>
             </Dialog>
         </Portal>

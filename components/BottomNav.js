@@ -19,7 +19,7 @@ export default function BottomNav() {
             screenOptions={({ route }) => {
                 const currentTab = tabs.find((tab) => tab.key === route.name);
                 return {
-                    headerTitle: t(currentTab?.title), // <-- ✅ Теперь локализация заголовка
+                    headerTitle: t(currentTab?.title),
                     tabBarIcon: ({ color, size }) => (
                         <MaterialCommunityIcons
                             name={currentTab?.icon || 'circle'}
