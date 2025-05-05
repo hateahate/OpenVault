@@ -25,4 +25,7 @@ export const NotesScreenStyles = StyleSheet.create({
         bottom: 16,
         backgroundColor: theme.colors.primary
     },
+    container: { flex: 1, padding: 16, backgroundColor: 'white' },
+    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
+    editBtn: { marginTop: 16 },
 });

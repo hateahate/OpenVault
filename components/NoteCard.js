@@ -1,10 +1,16 @@
 import React from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { Card, Paragraph, IconButton } from 'react-native-paper';
+import { Card, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import Markdown from 'react-native-markdown-display';
+import { mdStyles } from '../styles/MarkdownStyles';
+import { NoteCardStyles as styles } from '../styles/NoteCardStyles';
+import { useTranslation } from 'react-i18next';
+
 
 export default function NoteCard({ note, onToggleLock, onDelete }) {
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
     const handlePress = () => {
         navigation.navigate('NoteView', { id: note.id });
@@ -12,11 +18,11 @@ export default function NoteCard({ note, onToggleLock, onDelete }) {
 
     const confirmDelete = () => {
         Alert.alert(
-            'Удалить заметку',
-            'Вы уверены, что хотите удалить эту заметку?',
+            t('delete_note_dialog_title'),
+            t('delete_note_dialog_body'),
             [
-                { text: 'Отмена', style: 'cancel' },
-                { text: 'Удалить', style: 'destructive', onPress: () => onDelete(note.id) }
+                { text: t('cancel'), style: 'cancel' },
+                { text: t('delete'), style: 'destructive', onPress: () => onDelete(note.id) }
             ]
         );
     };
@@ -41,23 +47,12 @@ export default function NoteCard({ note, onToggleLock, onDelete }) {
                 )}
             />
             <Card.Content>
-                <Text variant="bodyMedium" numberOfLines={3}>
-                    {note.encrypted ? '🔒 Заметка зашифрована' : (note.content || '—')}
-                </Text>
+                <View style={styles.preview}>
+                    <Markdown style={mdStyles}>
+                        {note.encrypted ? `🔒 ${t('note_encrypted')}` : (note.content || '—')}
+                    </Markdown>
+                </View>
             </Card.Content>
         </Card>
     );
 }
-
-const styles = StyleSheet.create({
-    card: {
-        marginHorizontal: 12,
-        marginVertical: 6,
-        borderRadius: 16,
-        elevation: 2,
-    },
-    icons: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-});

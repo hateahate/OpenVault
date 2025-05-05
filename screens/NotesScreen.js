@@ -2,9 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList } from 'react-native';
 import { FAB, Snackbar } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { initNotesDb, getNotes, encryptNote } from '../storage/notesDb';
+import { initNotesDb, getNotes, encryptNote, deleteNote } from '../storage/notesDb';
 import NoteCard from '../components/NoteCard';
 import PasswordPrompt from '../components/PasswordPrompt';
+import { theme } from '../styles/theme';
+import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
+import { useTranslation } from 'react-i18next';
 
 export default function NotesScreen() {
   const [notes, setNotes] = useState([]);
@@ -12,14 +15,25 @@ export default function NotesScreen() {
   const [activeNote, setActiveNote] = useState(null);
   const [snack, setSnack] = useState({ visible: false, message: '' });
   const nav = useNavigation();
+  const { t } = useTranslation();
 
-  const load = async () => setNotes(await getNotes());
+  const load = async () => {
+    const list = await getNotes();
+    setNotes(list);
+  };
 
   useEffect(() => {
     initNotesDb().then(load);
   }, []);
 
-  useFocusEffect(useCallback(load, []));
+  useFocusEffect(
+    useCallback(() => {
+      const fetch = async () => {
+        await load();
+      };
+      fetch();
+    }, [])
+  );
 
   const onToggleLock = note => {
     setActiveNote(note);
@@ -29,7 +43,13 @@ export default function NotesScreen() {
   const onPassSubmit = async pwd => {
     setPassDialog(false);
     const ok = await encryptNote(activeNote.id, pwd);
-    setSnack({ visible: true, message: ok ? '🔒 Зашифровано' : '❌ Ошибка' });
+    setSnack({ visible: true, message: ok ? `🔒 ${t('encrypted')}` : `❌ ${t('error')}` });
+    load();
+  };
+
+  const onDelete = async id => {
+    await deleteNote(id);
+    setSnack({ visible: true, message: `🗑️ ${t('note_deleted')}` });
     load();
   };
 
@@ -38,18 +58,21 @@ export default function NotesScreen() {
       <FlatList
         data={notes}
         keyExtractor={i => i.id.toString()}
-        renderItem={({ item }) => <NoteCard note={item} onToggleLock={onToggleLock} />}
+        renderItem={({ item }) => (
+          <NoteCard note={item} onToggleLock={onToggleLock} onDelete={onDelete} />
+        )}
       />
 
       <FAB
+        style={styles.fab}
         icon="plus"
-        style={{ position: 'absolute', bottom: 16, right: 16, width: 56, height: 56, borderRadius: 28 }}
+        color={theme.colors.onPrimary}
         onPress={() => nav.navigate('NoteEditor')}
       />
 
       <PasswordPrompt
         visible={passDialog}
-        title="Установить пароль"
+        title={t('set_password')}
         onSubmit={onPassSubmit}
         onDismiss={() => setPassDialog(false)}
       />

@@ -72,10 +72,10 @@ function MainNavigator() {
         component={SettingsScreen}
         options={{ title: t('settings') }}
       />
-      <Stack.Screen name="NotesList" component={NotesScreen} options={{ title: 'Заметки' }} />
-      <Stack.Screen name="NoteView" component={NoteViewScreen} options={{ title: 'Смотреть' }} />
-      <Stack.Screen name="NoteCreate" component={NoteEditorScreen} options={{ title: 'Новая заметка' }} />
-      <Stack.Screen name="NoteEdit" component={NoteEditorScreen} options={{ title: 'Редактировать' }} />
+      <Stack.Screen name="NotesList" component={NotesScreen} options={{ title: t('notes') }} />
+      <Stack.Screen name="NoteView" component={NoteViewScreen} options={{ title: t('view') }} />
+      <Stack.Screen name="NoteCreate" component={NoteEditorScreen} options={{ title: t('new_note') }} />
+      <Stack.Screen name="NoteEditor" component={NoteEditorScreen} options={{ title: t('edit') }} />
       <Stack.Screen name="SetPin" component={SetPinScreen} options={{ title: t('set_pin') }} />
       <Stack.Screen name="RemovePin" component={RemovePinScreen} options={{ title: t('remove_pin') }} />
     </Stack.Navigator>

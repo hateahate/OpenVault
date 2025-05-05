@@ -3,9 +3,6 @@ import { encrypt as aesEncrypt, decrypt as aesDecrypt } from '../utils/crypto/ae
 
 const db = openDatabaseSync('notes.db');
 
-/**
- * Инициализация БД и создание таблицы notes, если её нет.
- */
 export async function initNotesDb() {
   try {
     await db.runAsync(`
@@ -22,9 +19,6 @@ export async function initNotesDb() {
   }
 }
 
-/**
- * Добавление новой заметки (изначально незашифрованной).
- */
 export async function addNote({ title, content }) {
   try {
     await db.runAsync(
@@ -37,11 +31,6 @@ export async function addNote({ title, content }) {
   }
 }
 
-/**
- * Получение списка всех заметок.
- * Если заметка зашифрована — content возвращается как null,
- * и в объекте есть encrypted = true.
- */
 export async function getNotes() {
   try {
     const rows = await db.getAllAsync(
@@ -60,9 +49,6 @@ export async function getNotes() {
   }
 }
 
-/**
- * Получение одной заметки по ID
- */
 export async function getNoteById(id) {
   try {
     const row = await db.getFirstAsync(
@@ -76,9 +62,6 @@ export async function getNoteById(id) {
   }
 }
 
-/**
- * Обновление заметки без сброса encrypted (если не указано явно).
- */
 export async function updateNote(id, { title, content, resetEncryption = false }) {
   try {
     if (resetEncryption) {
@@ -97,9 +80,6 @@ export async function updateNote(id, { title, content, resetEncryption = false }
   }
 }
 
-/**
- * Удаление заметки по id.
- */
 export async function deleteNote(id) {
   try {
     await db.runAsync(
@@ -111,23 +91,26 @@ export async function deleteNote(id) {
   }
 }
 
-/* ──────────────── ШИФРОВАНИЕ ──────────────── */
-
-/**
- * Шифрует существующую незашифрованную заметку и выставляет encrypted=1.
- */
 export async function encryptNote(id, password) {
   try {
-    const row = await db.getFirstAsync(
-      `SELECT content, encrypted FROM notes WHERE id = ?`,
-      [id]
-    );
-    if (!row || row.encrypted) return false;
-    const cipher = aesEncrypt(row.content, password);
-    await db.runAsync(
-      `UPDATE notes SET content = ?, encrypted = 1 WHERE id = ?`,
-      [cipher, id]
-    );
+    const note = await db.getFirstAsync('SELECT content, encrypted FROM notes WHERE id = ?', [id]);
+    if (!note) return false;
+
+    if (note.encrypted) {
+      const plain = aesDecrypt(note.content, password);
+      if (plain === null) return false;
+      await db.runAsync(
+        'UPDATE notes SET content = ?, encrypted = 0 WHERE id = ?',
+        [plain, id]
+      );
+    } else {
+      const cipher = aesEncrypt(note.content, password);
+      await db.runAsync(
+        'UPDATE notes SET content = ?, encrypted = 1 WHERE id = ?',
+        [cipher, id]
+      );
+    }
+
     return true;
   } catch (error) {
     console.error('encryptNote error:', error);
@@ -135,9 +118,6 @@ export async function encryptNote(id, password) {
   }
 }
 
-/**
- * Расшифровывает содержимое зашифрованной заметки (флаг encrypted сохраняется).
- */
 export async function decryptNoteContent(id, password) {
   try {
     const row = await db.getFirstAsync(

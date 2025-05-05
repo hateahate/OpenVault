@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { useTheme } from 'react-native-paper';
+import { theme } from '../styles/theme';
+import { mdStyles } from '../styles/MarkdownStyles';
 
 const ToolbarButton = ({ label, onPress }) => {
     const { colors } = useTheme();
@@ -120,19 +122,12 @@ const styles = StyleSheet.create({
         marginBottom: 12
     },
     saveBtn: {
-        backgroundColor: '#6200ee',
+        backgroundColor: theme.colors.primary,
         borderRadius: 4,
         padding: 12,
         alignItems: 'center',
-        marginTop: 8
+        marginTop: 8,
+        marginBottom: 30
     },
-    saveText: { color: 'white', fontWeight: 'bold' }
+    saveText: { color: theme.colors.onPrimary, fontWeight: 'bold' }
 });
-
-const mdStyles = {
-    body: { color: '#222', fontSize: 16, lineHeight: 24 },
-    heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 8 },
-    strong: { fontWeight: 'bold' },
-    em: { fontStyle: 'italic' },
-    listItemText: { marginVertical: 4 },
-};

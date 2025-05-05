@@ -3,6 +3,7 @@ import { View, Alert, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TextInput } from 'react-native-paper';
 import MarkdownEditorScreen from '../components/MarkdownEditorScreen';
+import { useTranslation } from 'react-i18next';
 import {
     initNotesDb,
     getNotes,
@@ -12,11 +13,13 @@ import {
 } from '../storage/notesDb';
 import PasswordPrompt from '../components/PasswordPrompt';
 
+
 export default function NoteEditorScreen() {
     const nav = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
     const isEdit = !!id;
+    const { t } = useTranslation();
 
     const [title, setTitle] = useState('');
     const [initialContent, setInitialContent] = useState('');
@@ -41,7 +44,7 @@ export default function NoteEditorScreen() {
     const handlePassword = async password => {
         const txt = await decryptNoteContent(id, password);
         if (!txt) {
-            Alert.alert('Ошибка', 'Неверный пароль');
+            Alert.alert(t('error'), t('wrong_password'));
         } else {
             const note = (await getNotes()).find(x => x.id === id);
             setTitle(note.title);
@@ -52,7 +55,7 @@ export default function NoteEditorScreen() {
 
     const handleSave = async content => {
         if (!title.trim() || !content.trim()) {
-            Alert.alert('Ошибка', 'Пустая заметка');
+            Alert.alert(t('error'), t('blank_note'));
             return;
         }
 
@@ -69,7 +72,7 @@ export default function NoteEditorScreen() {
         return (
             <PasswordPrompt
                 visible
-                title="Введите пароль"
+                title={t('enter_password')}
                 onSubmit={handlePassword}
                 onDismiss={() => nav.goBack()}
             />
@@ -79,7 +82,7 @@ export default function NoteEditorScreen() {
     return (
         <View style={styles.container}>
             <TextInput
-                label="Заголовок"
+                label={t('title_label')}
                 value={title}
                 onChangeText={setTitle}
                 mode="outlined"
