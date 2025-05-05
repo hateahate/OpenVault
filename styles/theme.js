@@ -4,7 +4,7 @@ export const theme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        primary: '#3B82F6', // например синий
+        primary: '#3B82F6',
         onPrimary: 'white'
     },
 };

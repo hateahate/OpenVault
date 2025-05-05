@@ -77,7 +77,7 @@ export default function SettingsScreen() {
                 <>
                     <Divider style={styles.divider} />
 
-                    <Text style={styles.sectionTitle}>{t('biometric_usage')}</Text>
+                    <Text style={styles.sectionTitle}>{t('biometric_usage_title')}</Text>
                     <List.Item
                         title={t('biometric_usage')}
                         titleStyle={styles.listItemTitle}

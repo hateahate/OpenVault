@@ -1,4 +1,3 @@
-// screens/AuthenticatorScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, Alert } from 'react-native';
 import { FAB, Portal, Dialog, Button, TextInput } from 'react-native-paper';
@@ -6,7 +5,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { AuthenticatorScreenStyles as styles } from '../styles/AuthenticatorScreenStyles';
 import { fetchAccounts, deleteAccount, saveEditedLabel } from '../utils/accounts';
 import AuthenticatorCard from '../components/AuthenticatorCard';
-import { useTranslation } from 'react-i18next'; // ✅
+import { useTranslation } from 'react-i18next';
 import { theme } from '../styles/theme';
 
 export default function AuthenticatorScreen() {

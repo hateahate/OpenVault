@@ -20,10 +20,10 @@ export default function AuthenticatorCard({ item, index, onLongPress, onPress, c
         if (animationRef.current) {
             animationRef.current.stop();
         }
-        progress.setValue(secondsLeft / period); // Начинаем с уже прошедшего времени
+        progress.setValue(secondsLeft / period);
         animationRef.current = Animated.timing(progress, {
             toValue: 0,
-            duration: secondsLeft * 1000, // Только оставшееся время!
+            duration: secondsLeft * 1000,
             useNativeDriver: false,
         });
         animationRef.current.start();
@@ -31,7 +31,7 @@ export default function AuthenticatorCard({ item, index, onLongPress, onPress, c
 
     useEffect(() => {
         startProgressAnimation();
-    }, [counter]); // каждый раз при смене counter (новый период)
+    }, [counter]);
 
     return (
         <Pressable onLongPress={() => onLongPress(index)} onPress={() => onPress(index)}>
@@ -43,7 +43,7 @@ export default function AuthenticatorCard({ item, index, onLongPress, onPress, c
                     }),
                 }]} />
                 <Card.Content style={styles.cardContent}>
-                    <Title style={styles.serviceName}>{item.label}</Title>
+                    <Text variant="titleLarge" style={styles.serviceName}>{item.label}</Text>
                     <Text style={styles.code}>{codeFormatted}</Text>
                     <Text style={styles.timer}>{secondsLeft}s</Text>
                 </Card.Content>

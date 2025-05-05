@@ -1,4 +1,3 @@
-// styles/SetPinScreenStyles.js
 import { StyleSheet } from 'react-native';
 
 export const SetPinScreenStyles = StyleSheet.create({

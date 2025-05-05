@@ -1,4 +1,3 @@
-// styles/RemovePinScreenStyles.js
 import { StyleSheet } from 'react-native';
 
 export const RemovePinScreenStyles = StyleSheet.create({

@@ -2,7 +2,7 @@
   "expo": {
     "name": "LockHive",
     "slug": "lockhive",
-    "version": "0.0.4.1",
+    "version": "0.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.stepanpavlenko.lockhive"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,12 +36,15 @@
     },
     "plugins": [
       "expo-localization",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      "expo-sqlite",
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {
-        "projectId": "b6075b8c-8a00-4083-ad7f-11256f738c4d"
+        "projectId": "7945f164-16f0-486d-9ece-987faa8d3b03"
       }
-    }
+    },
+    "owner": "stepanpavlenko"
   }
 }

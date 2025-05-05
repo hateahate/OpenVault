@@ -1,4 +1,3 @@
-// components/ProtectedScreenWrapper.js
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { View, Text, TextInput, Alert } from 'react-native';
 import { ActivityIndicator, Button } from 'react-native-paper';
@@ -21,7 +20,7 @@ export default function ProtectedScreenWrapper({ tabName, component: Component, 
     useEffect(() => {
         if (isFocused) {
             const now = Date.now();
-            const diff = (now - lastAccessTimeRef.current) / 1000; // разница в секундах
+            const diff = (now - lastAccessTimeRef.current) / 1000;
 
             if (diff > settings.tabTimeout) {
                 setAccessGranted(false);
@@ -45,7 +44,7 @@ export default function ProtectedScreenWrapper({ tabName, component: Component, 
                 setAccessGranted(result.success);
                 setCheckingAccess(false);
             } else {
-                setCheckingAccess(false); // Показываем форму для PIN
+                setCheckingAccess(false);
             }
         } else {
             setAccessGranted(true);

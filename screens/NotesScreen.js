@@ -1,54 +1,89 @@
-// screens/NotesScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, FlatList, Text } from 'react-native';
-import { FAB, Card, Title, Paragraph } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { loadNotes } from '../storage/secureStorage';
-import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
-import { useTranslation } from 'react-i18next'; // ✅
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, FlatList } from 'react-native';
+import { FAB, Snackbar } from 'react-native-paper';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { initNotesDb, getNotes, encryptNote, deleteNote } from '../storage/notesDb';
+import NoteCard from '../components/NoteCard';
+import PasswordPrompt from '../components/PasswordPrompt';
 import { theme } from '../styles/theme';
+import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
+import { useTranslation } from 'react-i18next';
 
 export default function NotesScreen() {
-    const [notes, setNotes] = useState([]);
-    const navigation = useNavigation();
-    const { t } = useTranslation();
+  const [notes, setNotes] = useState([]);
+  const [passDialog, setPassDialog] = useState(false);
+  const [activeNote, setActiveNote] = useState(null);
+  const [snack, setSnack] = useState({ visible: false, message: '' });
+  const nav = useNavigation();
+  const { t } = useTranslation();
 
-    useEffect(() => {
-        fetchNotes();
-    }, []);
+  const load = async () => {
+    const list = await getNotes();
+    setNotes(list);
+  };
 
-    const fetchNotes = async () => {
-        const data = await loadNotes();
-        setNotes(data);
-    };
+  useEffect(() => {
+    initNotesDb().then(load);
+  }, []);
 
-    const renderItem = ({ item }) => (
-        <Card style={styles.card}>
-            <Card.Content>
-                <Title numberOfLines={1}>{item.title}</Title>
-                <Paragraph numberOfLines={2}>{item.preview}</Paragraph>
-            </Card.Content>
-        </Card>
-    );
+  useFocusEffect(
+    useCallback(() => {
+      const fetch = async () => {
+        await load();
+      };
+      fetch();
+    }, [])
+  );
 
-    return (
-        <View style={styles.container}>
-            {notes.length === 0 ? (
-                <Text style={styles.emptyText}>{t('no_notes')}</Text>
-            ) : (
-                <FlatList
-                    data={notes}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={renderItem}
-                    contentContainerStyle={{ paddingBottom: 100 }}
-                />
-            )}
-            <FAB
-                style={styles.fab}
-                color={theme.colors.onPrimary}
-                icon="plus"
-                onPress={() => navigation.navigate('NewNote')}
-            />
-        </View>
-    );
+  const onToggleLock = note => {
+    setActiveNote(note);
+    setPassDialog(true);
+  };
+
+  const onPassSubmit = async pwd => {
+    setPassDialog(false);
+    const ok = await encryptNote(activeNote.id, pwd);
+    setSnack({ visible: true, message: ok ? `🔒 ${t('encrypted')}` : `❌ ${t('error')}` });
+    load();
+  };
+
+  const onDelete = async id => {
+    await deleteNote(id);
+    setSnack({ visible: true, message: `🗑️ ${t('note_deleted')}` });
+    load();
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={notes}
+        keyExtractor={i => i.id.toString()}
+        renderItem={({ item }) => (
+          <NoteCard note={item} onToggleLock={onToggleLock} onDelete={onDelete} />
+        )}
+      />
+
+      <FAB
+        style={styles.fab}
+        icon="plus"
+        color={theme.colors.onPrimary}
+        onPress={() => nav.navigate('NoteEditor')}
+      />
+
+      <PasswordPrompt
+        visible={passDialog}
+        title={t('set_password')}
+        onSubmit={onPassSubmit}
+        onDismiss={() => setPassDialog(false)}
+      />
+
+      <Snackbar
+        visible={snack.visible}
+        onDismiss={() => setSnack({ visible: false, message: '' })}
+        duration={2000}
+      >
+        {snack.message}
+      </Snackbar>
+    </View>
+  );
 }

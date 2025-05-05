@@ -1,4 +1,3 @@
-// screens/ScanQRScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Alert, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -6,7 +5,7 @@ import { loadAccounts, saveAccounts } from '../storage/secureStorage';
 import { useNavigation } from '@react-navigation/native';
 import { ScanQRScreenStyles as styles } from '../styles/ScanQRScreenStyles';
 import { parseOtpAuthUri } from '../utils/crypto/parseOtpAuthUri';
-import { useTranslation } from 'react-i18next'; // ✅
+import { useTranslation } from 'react-i18next';
 
 export default function ScanQRScreen() {
     const [permission, requestPermission] = useCameraPermissions();

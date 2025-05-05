@@ -5,6 +5,10 @@
   "build": {
     "preview": {
       "distribution": "internal",
+      "developmentClient": true,
+      "env": {
+        "ANDROID_SDK_ROOT": "/home/stepan/Android/Sdk"
+      },
       "android": {
         "buildType": "apk"
       }
