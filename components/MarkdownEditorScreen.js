@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../styles/theme';
 import { mdStyles } from '../styles/MarkdownStyles';
 
@@ -23,6 +24,7 @@ const ToolbarButton = ({ label, onPress }) => {
 };
 
 export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
+    const { t } = useTranslation();
     const [text, setText] = useState(initialContent);
     const [sel, setSel] = useState({ start: 0, end: 0 });
     const [preview, setPreview] = useState(false);
@@ -65,7 +67,7 @@ export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
 
             {preview ? (
                 <View style={styles.preview}>
-                    <Markdown style={mdStyles}>{text || '_Нет содержимого_'}</Markdown>
+                    <Markdown style={mdStyles}>{text || `_${t('no_content')}_`}</Markdown>
                 </View>
             ) : (
                 <TextInput
@@ -74,7 +76,7 @@ export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
                     scrollEnabled
                     value={text}
                     onChangeText={setText}
-                    placeholder="Введите текст заметки..."
+                    placeholder={t('note_placeholder')}
                     textAlignVertical="top"
                     selection={sel}
                     onSelectionChange={e => setSel(e.nativeEvent.selection)}
@@ -82,7 +84,7 @@ export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
             )}
 
             <TouchableOpacity style={styles.saveBtn} onPress={() => onSave(text)}>
-                <Text style={styles.saveText}>Сохранить</Text>
+                <Text style={styles.saveText}>{t('save')}</Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>
     );
