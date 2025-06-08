@@ -10,6 +10,7 @@ import RemovePinScreen from './screens/RemovePinScreen';
 import NotesScreen from './screens/NotesScreen';
 import NoteViewScreen from './screens/NoteViewScreen';
 import NoteEditorScreen from './screens/NoteEditorScreen';
+import LaunchAuthScreen from './screens/LaunchAuthScreen';
 import { AppProvider } from './contexts/AppContext';
 import AppContext from './contexts/AppContext';
 import './i18n';
@@ -34,12 +35,14 @@ export default function App() {
 }
 
 function MainNavigator() {
-  const { isAuthenticated, isLoading, authenticate } = React.useContext(AppContext);
+  const { isAuthenticated, isLoading, authenticate, settings } = React.useContext(AppContext);
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    authenticate();
-  }, []);
+    if (!isLoading) {
+      authenticate();
+    }
+  }, [isLoading]);
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -52,6 +55,9 @@ function MainNavigator() {
   }
 
   if (!isAuthenticated) {
+    if (settings.requestAuthOnLaunch && (settings.hasPin || settings.biometricEnabled)) {
+      return <LaunchAuthScreen />;
+    }
     return null;
   }
 
