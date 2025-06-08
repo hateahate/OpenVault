@@ -30,7 +30,7 @@ export default function ProtectedScreenWrapper({ tabName, component: Component, 
             }
             lastAccessTimeRef.current = now;
         }
-    }, [isFocused, settings.tabLocks]);
+    }, [isFocused, settings.tabLocks?.[tabName], settings.tabTimeout]);
 
     const checkAccess = async () => {
         if (tabLocks?.[tabName] && settings.hasPin) {

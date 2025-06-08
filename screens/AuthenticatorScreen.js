@@ -97,7 +97,7 @@ export default function AuthenticatorScreen() {
                     <Dialog.Title>{t('edit')}</Dialog.Title>
                     <Dialog.Content>
                         <TextInput
-                            label={t('new_pin')}
+                            label={t('account_label')}
                             value={newLabel}
                             onChangeText={setNewLabel}
                         />

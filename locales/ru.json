@@ -9,6 +9,7 @@
     "enter_pin": "Введите PIN",
     "current_pin": "Текущий PIN",
     "new_pin": "Новый PIN",
+    "account_label": "Метка аккаунта",
     "save_pin": "Сохранить PIN",
     "biometric_usage_title": "Биометрия",
     "biometric_usage": "Использовать биометрию",
@@ -21,6 +22,7 @@
     "edit": "Редактировать",
     "save": "Сохранить",
     "cancel": "Отмена",
+    "delete": "Удалить",
     "delete_account": "Удалить аккаунт",
     "are_you_sure": "Вы уверены?",
     "success": "Успешно",
@@ -51,6 +53,9 @@
     "enter_new_pin": "Введите новый PIN",
     "confirm_new_pin": "Подтвердите новый PIN",
     "pins_do_not_match": "PIN-коды не совпадают",
+    "pin_must_be_4_digits": "PIN должен содержать 4 цифры",
+    "wrong_pin": "Неверный PIN",
+    "try_again": "Попробуйте снова",
     "next": "Далее",
     "enter_current_pin": "Введите текущий PIN",
     "pin_code": "PIN-код",
@@ -75,6 +80,7 @@
     "password_label": "Пароль",
     "ok": "Ок",
     "blank_note": "Пустая заметка",
+    "no_content": "Нет содержимого",
     "title_label": "Заголовок",
     "view": "Просмотр"
 }
