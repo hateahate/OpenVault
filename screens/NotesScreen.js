@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, FlatList } from 'react-native';
-import { FAB, Snackbar } from 'react-native-paper';
+import { FAB, Snackbar, useTheme } from 'react-native-paper';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { initNotesDb, getNotes, encryptNote, deleteNote } from '../storage/notesDb';
 import NoteCard from '../components/NoteCard';
 import PasswordPrompt from '../components/PasswordPrompt';
-import { theme } from '../styles/theme';
-import { NotesScreenStyles as styles } from '../styles/NotesScreenStyles';
+import { getNotesScreenStyles } from '../styles/NotesScreenStyles';
 import { useTranslation } from 'react-i18next';
 
 export default function NotesScreen() {
@@ -16,6 +15,8 @@ export default function NotesScreen() {
   const [snack, setSnack] = useState({ visible: false, message: '' });
   const nav = useNavigation();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = React.useMemo(() => getNotesScreenStyles(theme), [theme]);
 
   const load = async () => {
     const list = await getNotes();

@@ -1,15 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { View } from 'react-native';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { Text, Button, TextInput, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import AppContext from '../contexts/AppContext';
 import { useNavigation } from '@react-navigation/native';
-import { SetPinScreenStyles as styles } from '../styles/SetPinScreenStyles';
+import { getSetPinScreenStyles } from '../styles/SetPinScreenStyles';
 
 export default function SetPinScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation();
     const { settings, verifyPin, updatePinCode } = useContext(AppContext);
+    const theme = useTheme();
+    const styles = React.useMemo(() => getSetPinScreenStyles(theme), [theme]);
 
     const [oldPin, setOldPin] = useState('');
     const [newPin, setNewPin] = useState('');

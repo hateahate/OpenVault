@@ -1,17 +1,16 @@
 import { StyleSheet } from 'react-native';
-import { theme } from './theme';
 
-export const AuthenticatorScreenStyles = StyleSheet.create({
+export const getAuthenticatorScreenStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.background,
         paddingHorizontal: 16,
     },
     emptyText: {
         textAlign: 'center',
         marginTop: 50,
         fontSize: 18,
-        color: 'gray',
+        color: theme.colors.onSurfaceVariant,
     },
     fab: {
         position: 'absolute',

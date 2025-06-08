@@ -13,6 +13,7 @@ const defaultSettings = {
     language: 'ru',
     requestAuthOnLaunch: true,
     tabTimeout: 120,
+    themeMode: 'light',
 };
 
 export function AppProvider({ children }) {
@@ -117,6 +118,11 @@ export function AppProvider({ children }) {
         await saveSettings(updated);
     };
 
+    const updateThemeMode = async (mode) => {
+        const updated = { ...settings, themeMode: mode };
+        await saveSettings(updated);
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -132,6 +138,7 @@ export function AppProvider({ children }) {
                 updateLanguage,
                 toggleRequestAuthOnLaunch,
                 updateTabTimeout,
+                updateThemeMode,
             }}
         >
             {children}

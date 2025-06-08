@@ -1,15 +1,15 @@
 import { StyleSheet } from 'react-native';
 
-export const SettingsScreenStyles = StyleSheet.create({
+export const getSettingsScreenStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: theme.colors.background,
     },
     sectionTitle: {
         fontSize: 20,
         fontWeight: '600',
-        color: '#212121',
+        color: theme.colors.onSurface,
         marginTop: 24,
         marginBottom: 12,
     },
@@ -21,15 +21,15 @@ export const SettingsScreenStyles = StyleSheet.create({
     divider: {
         marginVertical: 20,
         height: 1,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: theme.colors.outlineVariant,
     },
     listItemTitle: {
         fontSize: 16,
-        color: '#424242',
+        color: theme.colors.onSurfaceVariant,
     },
     radioTitle: {
         fontSize: 16,
-        color: '#424242',
+        color: theme.colors.onSurfaceVariant,
     },
     footerContainer: {
         marginTop: 30,
@@ -38,7 +38,7 @@ export const SettingsScreenStyles = StyleSheet.create({
     },
     footerText: {
         fontSize: 12,
-        color: 'gray',
+        color: theme.colors.onSurfaceVariant,
         textAlign: 'center',
         lineHeight: 18,
     },

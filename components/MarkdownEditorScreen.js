@@ -11,7 +11,6 @@ import {
 import Markdown from 'react-native-markdown-display';
 import { useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../styles/theme';
 import { mdStyles } from '../styles/MarkdownStyles';
 
 const ToolbarButton = ({ label, onPress }) => {
@@ -25,6 +24,7 @@ const ToolbarButton = ({ label, onPress }) => {
 
 export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
     const { t } = useTranslation();
+    const { colors } = useTheme();
     const [text, setText] = useState(initialContent);
     const [sel, setSel] = useState({ start: 0, end: 0 });
     const [preview, setPreview] = useState(false);
@@ -42,6 +42,16 @@ export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
         setText(nt);
         setSel({ start: end + marker.length * 2, end: end + marker.length * 2 });
     };
+
+    const styles = React.useMemo(() => StyleSheet.create({
+        ...baseStyles,
+        container: { ...baseStyles.container, backgroundColor: colors.background },
+        toolbar: { ...baseStyles.toolbar, backgroundColor: colors.background },
+        input: { ...baseStyles.input, backgroundColor: colors.background, color: colors.onSurface },
+        preview: { ...baseStyles.preview, backgroundColor: colors.elevation.level1 },
+        saveBtn: { ...baseStyles.saveBtn, backgroundColor: colors.primary },
+        saveText: { ...baseStyles.saveText, color: colors.onPrimary },
+    }), [colors]);
 
     const insertLine = (prefix) => {
         const { start } = sel;
@@ -90,13 +100,12 @@ export default function MarkdownEditorScreen({ initialContent = '', onSave }) {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, backgroundColor: 'white' },
+const baseStyles = StyleSheet.create({
+    container: { flex: 1, padding: 16 },
     toolbar: {
         flexDirection: 'row',
         marginBottom: 8,
         justifyContent: 'space-around',
-        backgroundColor: 'white',
         zIndex: 10
     },
     btn: {
@@ -110,8 +119,6 @@ const styles = StyleSheet.create({
         borderColor: '#CCC',
         borderRadius: 8,
         padding: 12,
-        backgroundColor: 'white',
-        color: '#222'
     },
     editor: { flex: 1, minHeight: 200, marginBottom: 12 },
     preview: {
@@ -120,16 +127,14 @@ const styles = StyleSheet.create({
         borderColor: '#CCC',
         borderRadius: 8,
         padding: 8,
-        backgroundColor: '#FAFAFA',
         marginBottom: 12
     },
     saveBtn: {
-        backgroundColor: theme.colors.primary,
         borderRadius: 4,
         padding: 12,
         alignItems: 'center',
         marginTop: 8,
         marginBottom: 30
     },
-    saveText: { color: theme.colors.onPrimary, fontWeight: 'bold' }
+    saveText: { fontWeight: 'bold' }
 });

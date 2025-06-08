@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { TextInput } from 'react-native-paper';
+import { TextInput, useTheme } from 'react-native-paper';
 import MarkdownEditorScreen from '../components/MarkdownEditorScreen';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,6 +20,11 @@ export default function NoteEditorScreen() {
     const id = route.params?.id;
     const isEdit = !!id;
     const { t } = useTranslation();
+    const theme = useTheme();
+    const styles = React.useMemo(() => StyleSheet.create({
+        container: { flex: 1, backgroundColor: theme.colors.background },
+        title: { margin: 16 },
+    }), [theme]);
 
     const [title, setTitle] = useState('');
     const [initialContent, setInitialContent] = useState('');
@@ -98,7 +103,3 @@ export default function NoteEditorScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: 'white' },
-    title: { margin: 16 }
-});

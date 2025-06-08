@@ -82,5 +82,9 @@
     "blank_note": "Пустая заметка",
     "no_content": "Нет содержимого",
     "title_label": "Заголовок",
-    "view": "Просмотр"
+    "view": "Просмотр",
+    "theme": "Тема",
+    "light_theme": "Светлая",
+    "dark_theme": "Тёмная",
+    "system_theme": "Как в системе"
 }
