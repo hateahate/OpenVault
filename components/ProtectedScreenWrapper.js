@@ -3,10 +3,14 @@ import { View, Text, TextInput, Alert } from 'react-native';
 import { ActivityIndicator, Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { BottomNavStyles as styles } from '../styles/BottomNavStyles';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AppContext from '../contexts/AppContext';
 import { useIsFocused } from '@react-navigation/native';
+
+const styles = StyleSheet.create({
+    centered: { flex: 1 },
+});
 
 export default function ProtectedScreenWrapper({ tabName, component: Component, tabLocks }) {
     const [accessGranted, setAccessGranted] = useState(false);

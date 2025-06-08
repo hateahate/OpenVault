@@ -1,15 +1,17 @@
 import React, { useState, useContext } from 'react';
 import { View } from 'react-native';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { Text, Button, TextInput, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import AppContext from '../contexts/AppContext';
 import { useNavigation } from '@react-navigation/native';
-import { RemovePinScreenStyles as styles } from '../styles/RemovePinScreenStyles';
+import { getRemovePinScreenStyles } from '../styles/RemovePinScreenStyles';
 
 export default function RemovePinScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation();
     const { verifyPin, removePinCode } = useContext(AppContext);
+    const theme = useTheme();
+    const styles = React.useMemo(() => getRemovePinScreenStyles(theme), [theme]);
 
     const [currentPin, setCurrentPin] = useState('');
 

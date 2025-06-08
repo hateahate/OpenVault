@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Text, List, Switch, Button, Divider, RadioButton } from 'react-native-paper';
+import { Text, List, Switch, Button, Divider, RadioButton, useTheme } from 'react-native-paper';
 import AppContext from '../contexts/AppContext';
 import { tabs } from '../navigation/tabs';
 import { useTranslation } from 'react-i18next';
-import { SettingsScreenStyles as styles } from '../styles/SettingsScreenStyles';
+import { getSettingsScreenStyles } from '../styles/SettingsScreenStyles';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 
@@ -16,10 +16,13 @@ export default function SettingsScreen() {
         updateLanguage,
         toggleRequestAuthOnLaunch,
         updateTabTimeout,
+        updateThemeMode,
     } = useContext(AppContext);
 
     const { t } = useTranslation();
     const navigation = useNavigation();
+    const theme = useTheme();
+    const styles = React.useMemo(() => getSettingsScreenStyles(theme), [theme]);
     const appVersion = Constants.expoConfig.version;
 
     const handleToggleBiometric = async (value) => {
@@ -33,6 +36,10 @@ export default function SettingsScreen() {
 
     const handleChangeLanguage = async (value) => {
         await updateLanguage(value);
+    };
+
+    const handleChangeTheme = async (value) => {
+        await updateThemeMode(value);
     };
 
     const handleChangeTimeout = async (value) => {
@@ -117,6 +124,15 @@ export default function SettingsScreen() {
                     </RadioButton.Group>
                 </>
             )}
+
+            <Divider style={styles.divider} />
+
+            <Text style={styles.sectionTitle}>{t('theme')}</Text>
+            <RadioButton.Group onValueChange={handleChangeTheme} value={settings.themeMode}>
+                <RadioButton.Item label={t('light_theme')} value="light" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('dark_theme')} value="dark" labelStyle={styles.radioTitle} />
+                <RadioButton.Item label={t('system_theme')} value="system" labelStyle={styles.radioTitle} />
+            </RadioButton.Group>
 
             <Divider style={styles.divider} />
 

@@ -82,5 +82,9 @@
     "blank_note": "Blank note",
     "no_content": "No content",
     "title_label": "Title",
-    "view": "View"
+    "view": "View",
+    "theme": "Theme",
+    "light_theme": "Light",
+    "dark_theme": "Dark",
+    "system_theme": "System default"
 }
