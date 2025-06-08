@@ -1,19 +1,19 @@
 import { StyleSheet } from 'react-native';
 
-export const RemovePinScreenStyles = StyleSheet.create({
+export const getRemovePinScreenStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: theme.colors.background,
         justifyContent: 'center',
     },
     input: {
         marginBottom: 16,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: theme.colors.surface,
         paddingHorizontal: 16,
         height: 56,
         fontSize: 16,
-        color: 'black',
+        color: theme.colors.onSurface,
     },
     button: {
         marginTop: 12,

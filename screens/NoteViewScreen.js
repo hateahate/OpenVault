@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
-import { Text, Button } from 'react-native-paper';
+import { Text, Button, useTheme } from 'react-native-paper';
 import Markdown from 'react-native-markdown-display';
 import { getNotes, decryptNoteContent, encryptNote } from '../storage/notesDb';
 import PasswordPrompt from '../components/PasswordPrompt';
@@ -14,6 +14,12 @@ export default function NoteViewScreen({ route, navigation }) {
     const [showDecryptPrompt, setShowDecryptPrompt] = useState(false);
     const [plain, setPlain] = useState('');
     const { t } = useTranslation();
+    const theme = useTheme();
+    const styles = React.useMemo(() => StyleSheet.create({
+        container: { flex: 1, padding: 16, backgroundColor: theme.colors.background },
+        title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
+        editBtn: { marginTop: 16 },
+    }), [theme]);
 
     useEffect(() => {
         (async () => {
@@ -102,9 +108,4 @@ export default function NoteViewScreen({ route, navigation }) {
     );
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, backgroundColor: 'white' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 12 },
-    editBtn: { marginTop: 16 },
-});
 

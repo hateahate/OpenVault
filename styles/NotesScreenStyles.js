@@ -1,23 +1,22 @@
 import { StyleSheet } from 'react-native';
-import { theme } from './theme';
 
-export const NotesScreenStyles = StyleSheet.create({
+export const getNotesScreenStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 16,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.background,
     },
     emptyText: {
         textAlign: 'center',
         marginTop: 50,
         fontSize: 18,
-        color: 'gray',
+        color: theme.colors.onSurfaceVariant,
     },
     card: {
         marginVertical: 8,
         borderRadius: 16,
         elevation: 4,
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.surface,
     },
     fab: {
         position: 'absolute',

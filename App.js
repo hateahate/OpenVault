@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { useColorScheme } from 'react-native';
 import BottomNav from './components/BottomNav';
 import ScanQRScreen from './screens/ScanQRScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -16,7 +17,7 @@ import AppContext from './contexts/AppContext';
 import './i18n';
 import * as SplashScreen from 'expo-splash-screen';
 import { useTranslation } from 'react-i18next';
-import { theme } from './styles/theme';
+import { LightTheme, DarkTheme } from './styles/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,12 +26,23 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <AppProvider>
-      <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <MainNavigator />
-        </NavigationContainer>
-      </PaperProvider>
+      <AppContent />
     </AppProvider>
+  );
+}
+
+function AppContent() {
+  const { settings } = React.useContext(AppContext);
+  const scheme = useColorScheme();
+  const isDark = settings.themeMode === 'dark' || (settings.themeMode === 'system' && scheme === 'dark');
+  const theme = isDark ? DarkTheme : LightTheme;
+
+  return (
+    <PaperProvider theme={theme}>
+      <NavigationContainer theme={theme}>
+        <MainNavigator />
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 
