@@ -9,6 +9,7 @@
     "enter_pin": "Enter PIN",
     "current_pin": "Current PIN",
     "new_pin": "New PIN",
+    "account_label": "Account label",
     "save_pin": "Save PIN",
     "biometric_usage_title": "Biometrics",
     "biometric_usage": "Use biometrics",
@@ -21,6 +22,7 @@
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
+    "delete": "Delete",
     "delete_account": "Delete account",
     "are_you_sure": "Are you sure?",
     "success": "Success",
@@ -51,6 +53,9 @@
     "enter_new_pin": "Enter new PIN",
     "confirm_new_pin": "Confirm new PIN",
     "pins_do_not_match": "PINs do not match",
+    "pin_must_be_4_digits": "PIN must be 4 digits",
+    "wrong_pin": "Wrong PIN",
+    "try_again": "Try again",
     "next": "Next",
     "enter_current_pin": "Enter your current PIN",
     "pin_code": "PIN code",
@@ -75,6 +80,7 @@
     "password_label": "Password",
     "ok": "Ok",
     "blank_note": "Blank note",
+    "no_content": "No content",
     "title_label": "Title",
     "view": "View"
 }
