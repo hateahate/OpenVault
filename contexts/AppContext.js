@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as LocalAuthentication from 'expo-local-authentication';
 import i18n from '../i18n';
 
 const AppContext = createContext();
@@ -39,21 +38,7 @@ export function AppProvider({ children }) {
 
     const authenticate = async () => {
         if (settings.requestAuthOnLaunch && (settings.hasPin || settings.biometricEnabled)) {
-            const isAvailable = await LocalAuthentication.hasHardwareAsync();
-            const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-
-            if (settings.biometricEnabled && isAvailable && isEnrolled) {
-                const result = await LocalAuthentication.authenticateAsync({
-                    promptMessage: settings.language === 'ru'
-                        ? 'Введите PIN устройства или используйте биометрию'
-                        : 'Enter device PIN or use biometrics',
-                });
-                setIsAuthenticated(result.success);
-            } else if (settings.hasPin) {
-                setIsAuthenticated(false);
-            } else {
-                setIsAuthenticated(true);
-            }
+            setIsAuthenticated(false);
         } else {
             setIsAuthenticated(true);
         }
