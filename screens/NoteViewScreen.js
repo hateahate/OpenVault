@@ -93,7 +93,7 @@ export default function NoteViewScreen({ route, navigation }) {
             {showDecryptPrompt && (
                 <PasswordPrompt
                     visible
-                    title={t()}
+                    title={t('disable_encryption')}
                     onSubmit={onDecryptDisable}
                     onDismiss={() => setShowDecryptPrompt(false)}
                 />
