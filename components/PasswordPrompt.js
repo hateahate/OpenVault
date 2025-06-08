@@ -7,6 +7,8 @@ export default function PasswordPrompt({ visible, title, onSubmit, onDismiss }) 
     const [password, setPassword] = useState('');
     const promptTitle = title || t('enter_password');
 
+    const dialogTitle = title || t('enter_password');
+
     useEffect(() => {
         if (visible) setPassword('');
     }, [visible]);
